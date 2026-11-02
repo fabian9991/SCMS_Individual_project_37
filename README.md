@@ -18,3 +18,6 @@ Contribution Statement:
 ## run commands
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+
+to download all packages in the run: 
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt 
