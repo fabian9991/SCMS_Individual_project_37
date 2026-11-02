@@ -35,9 +35,15 @@
   </default>
 
   <worldbody>
-    <body name="base" pos="0 0 0">
+      <body name="base" pos="0 0 0" quat="0 0 0 1">
       <inertial pos="-0.064 0 0.06" mass="1.8" diaginertia="0.01 0.01 0.008"/>
       <joint type="free" name="base_joint"/>
+      <!-- Forward-facing RGB camera attached to the robot -->
+      <camera name="front_camera" pos="0.09 0 0.12" xyaxes="0 -1 0 0 0 1" fovy="60"/>
+
+      <!-- Reference point for the simulated LiDAR scan -->
+      <site name="lidar_site" pos="-0.049 0 0.17" size="0.005" rgba="1 0 0 1"/>
+
       <geom pos="-0.064 0 0.01" mesh="waffle_pi_base" material="black" class="visual"/>
       <geom pos="-0.064 0 0.01" mesh="waffle_pi_base" class="collision"/>
       <geom size="0.005" pos="-0.177 -0.064 0.005" type="sphere" material="grey" friction="0.0001 0.0001 0.0001" solref="0.02 1" solimp="0.95 0.99 0.001" condim="1"/>
