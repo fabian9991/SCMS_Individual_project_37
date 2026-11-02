@@ -1,0 +1,80 @@
+<mujoco model="TB3-WafflePi scene">
+  <include file="turtlebot3_waffle_pi.xml"/>
+
+  <statistic center="-4 -1 0" extent="6"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="120" elevation="-20"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
+      markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+  </asset>
+
+<worldbody>
+    <light pos="-4 0 5" dir="0 0 -1" directional="true"/>
+
+    <geom name="floor" type="plane"
+          size="0 0 0.05" material="groundplane"/>
+
+    <!-- TOP WALL -->
+    <geom name="wall_top" type="box"
+          pos="-3.75 1 0.5" size="4.25 0.075 0.5"
+          rgba="0.7 0.7 0.7 1"/>
+
+    <!-- ENCLOSED STARTING AREA: RIGHT WALL AND SHORT BOTTOM WALL -->
+    <geom name="wall_start_right" type="box"
+          pos="0.5 0.25 0.5" size="0.075 0.75 0.5"
+          rgba="0.7 0.7 0.7 1"/>
+
+    <geom name="wall_start_bottom" type="box"
+          pos="-0.25 -0.5 0.5" size="0.75 0.075 0.5"
+          rgba="0.7 0.7 0.7 1"/>
+
+    <!-- WALLS AROUND THE LOWER BAYS -->
+    <geom name="wall_bottom" type="box"
+          pos="-4.5 -3 0.5" size="3.5 0.075 0.5"
+          rgba="0.7 0.7 0.7 1"/>
+
+    <geom name="wall_left_lower" type="box"
+          pos="-8 -1.75 0.5" size="0.075 1.25 0.5"
+          rgba="0.7 0.7 0.7 1"/>
+
+    <geom name="wall_right_lower" type="box"
+          pos="-1 -1.75 0.5" size="0.075 1.25 0.5"
+          rgba="0.7 0.7 0.7 1"/>
+
+    <!-- LEFT SHELF: TOUCHES THE BOTTOM WALL -->
+    <geom name="shelf_left" type="box"
+          pos="-6 -1.75 0.5" size="0.65 1.25 0.5"
+          rgba="0.55 0.35 0.18 1"/>
+
+    <!-- RIGHT SHELF: LEAVES A PASSAGE BELOW IT -->
+    <geom name="shelf_right" type="box"
+          pos="-3.4 -1.15 0.5" size="0.9 0.65 0.5"
+          rgba="0.55 0.35 0.18 1"/>
+
+    <!-- CHARGER PLACEHOLDER: WE WILL ADD THE ARUCO MARKER LATER -->
+    <geom name="charger" type="box"
+          pos="-9 0 0.3" size="0.3 0.4 0.3"
+          rgba="0.15 0.35 0.8 1"/>
+
+    <!-- GOAL MARKERS: VISUAL GUIDES ONLY -->
+    <site name="goal_1" type="cylinder"
+          pos="-1.8 -1.2 0.015" size="0.15 0.01"
+          rgba="0.1 0.9 0.2 0.7"/>
+
+    <site name="goal_2" type="cylinder"
+          pos="-4.8 -2.4 0.015" size="0.15 0.01"
+          rgba="0.1 0.9 0.2 0.7"/>
+
+    <site name="goal_3" type="cylinder"
+          pos="-7.3 -2.4 0.015" size="0.15 0.01"
+          rgba="0.1 0.9 0.2 0.7"/>
+  </worldbody>
+</mujoco>
