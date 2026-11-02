@@ -1,0 +1,117 @@
+001/105 range error=+0.039 m, bearing error=-0.01 deg
+002/105 range error=+0.015 m, bearing error=-0.02 deg
+003/105 range error=+0.056 m, bearing error=-0.01 deg
+004/105 range error=+0.021 m, bearing error=-0.01 deg
+005/105 range error=+0.041 m, bearing error=-0.02 deg
+006/105 range error=+0.030 m, bearing error=-0.01 deg
+007/105 range error=+0.016 m, bearing error=-0.02 deg
+008/105 range error=+0.064 m, bearing error=-0.01 deg
+009/105 range error=+0.016 m, bearing error=-0.01 deg
+010/105 range error=+0.030 m, bearing error=-0.01 deg
+011/105 range error=+0.025 m, bearing error=-0.00 deg
+012/105 range error=+0.024 m, bearing error=-0.01 deg
+013/105 range error=+0.059 m, bearing error=-0.01 deg
+014/105 range error=+0.021 m, bearing error=-0.01 deg
+015/105 range error=+0.061 m, bearing error=-0.01 deg
+016/105 range error=+0.028 m, bearing error=-0.01 deg
+017/105 range error=+0.035 m, bearing error=-0.01 deg
+018/105 range error=+0.023 m, bearing error=-0.01 deg
+019/105 range error=+0.027 m, bearing error=-0.01 deg
+020/105 range error=+0.024 m, bearing error=-0.01 deg
+021/105 range error=+0.020 m, bearing error=-0.01 deg
+022/105 range error=+0.033 m, bearing error=-0.01 deg
+023/105 range error=+0.044 m, bearing error=-0.01 deg
+024/105 range error=+0.034 m, bearing error=-0.01 deg
+025/105 range error=+0.022 m, bearing error=-0.01 deg
+026/105 range error=+0.024 m, bearing error=-0.01 deg
+027/105 range error=+0.023 m, bearing error=-0.01 deg
+028/105 range error=+0.041 m, bearing error=-0.02 deg
+029/105 range error=+0.034 m, bearing error=-0.01 deg
+030/105 range error=+0.036 m, bearing error=-0.02 deg
+031/105 range error=+0.020 m, bearing error=-0.01 deg
+032/105 range error=+0.018 m, bearing error=-0.01 deg
+033/105 range error=+0.017 m, bearing error=-0.02 deg
+034/105 range error=+0.019 m, bearing error=-0.02 deg
+035/105 range error=+0.022 m, bearing error=-0.01 deg
+036/105 range error=+0.019 m, bearing error=-0.01 deg
+037/105 range error=+0.019 m, bearing error=-0.01 deg
+038/105 range error=+0.017 m, bearing error=-0.01 deg
+039/105 range error=+0.019 m, bearing error=-0.02 deg
+040/105 range error=+0.020 m, bearing error=-0.01 deg
+041/105 range error=+0.018 m, bearing error=-0.01 deg
+042/105 range error=+0.019 m, bearing error=-0.01 deg
+043/105 range error=+0.016 m, bearing error=-0.01 deg
+044/105 range error=+0.017 m, bearing error=-0.01 deg
+045/105 range error=+0.020 m, bearing error=-0.02 deg
+046/105 range error=+0.012 m, bearing error=-0.01 deg
+047/105 range error=+0.014 m, bearing error=-0.01 deg
+048/105 range error=+0.014 m, bearing error=-0.01 deg
+049/105 range error=+0.014 m, bearing error=-0.02 deg
+050/105 range error=+0.015 m, bearing error=-0.01 deg
+051/105 range error=+0.013 m, bearing error=-0.01 deg
+052/105 range error=+0.013 m, bearing error=-0.01 deg
+053/105 range error=+0.013 m, bearing error=-0.01 deg
+054/105 range error=+0.014 m, bearing error=-0.01 deg
+055/105 range error=+0.014 m, bearing error=-0.02 deg
+056/105 range error=+0.014 m, bearing error=-0.01 deg
+057/105 range error=+0.013 m, bearing error=-0.01 deg
+058/105 range error=+0.015 m, bearing error=-0.01 deg
+059/105 range error=+0.014 m, bearing error=-0.01 deg
+060/105 range error=+0.013 m, bearing error=-0.01 deg
+061/105 range error=+0.004 m, bearing error=-0.00 deg
+062/105 range error=+0.005 m, bearing error=-0.00 deg
+063/105 range error=+0.008 m, bearing error=-0.01 deg
+064/105 range error=+0.006 m, bearing error=-0.01 deg
+065/105 range error=+0.004 m, bearing error=-0.02 deg
+066/105 range error=+0.002 m, bearing error=-0.00 deg
+067/105 range error=+0.001 m, bearing error=-0.01 deg
+068/105 range error=+0.009 m, bearing error=-0.01 deg
+069/105 range error=+0.002 m, bearing error=-0.02 deg
+070/105 range error=+0.002 m, bearing error=-0.02 deg
+071/105 range error=+0.001 m, bearing error=-0.00 deg
+072/105 range error=+0.003 m, bearing error=-0.00 deg
+073/105 range error=+0.008 m, bearing error=-0.02 deg
+074/105 range error=+0.003 m, bearing error=-0.02 deg
+075/105 range error=+0.001 m, bearing error=-0.01 deg
+076/105 range error=+0.001 m, bearing error=-0.01 deg
+077/105 range error=+0.001 m, bearing error=-0.01 deg
+078/105 range error=+0.001 m, bearing error=-0.02 deg
+079/105 range error=+0.000 m, bearing error=-0.02 deg
+080/105 not_detected
+081/105 range error=+0.000 m, bearing error=-0.02 deg
+082/105 range error=+0.001 m, bearing error=+0.00 deg
+083/105 range error=+0.001 m, bearing error=-0.01 deg
+084/105 range error=+0.001 m, bearing error=-0.03 deg
+085/105 range error=+0.001 m, bearing error=-0.01 deg
+086/105 not_detected
+087/105 range error=+0.001 m, bearing error=-0.00 deg
+088/105 range error=+0.001 m, bearing error=-0.01 deg
+089/105 range error=+0.000 m, bearing error=-0.02 deg
+090/105 range error=+0.001 m, bearing error=-0.02 deg
+091/105 range error=+0.000 m, bearing error=-0.02 deg
+092/105 range error=+0.000 m, bearing error=-0.00 deg
+093/105 range error=+0.000 m, bearing error=-0.02 deg
+094/105 not_detected
+095/105 not_detected
+096/105 not_detected
+097/105 range error=+0.000 m, bearing error=-0.01 deg
+098/105 range error=+0.000 m, bearing error=-0.01 deg
+099/105 range error=+0.000 m, bearing error=-0.01 deg
+100/105 not_detected
+101/105 not_detected
+102/105 not_detected
+103/105 range error=+0.000 m, bearing error=-0.00 deg
+104/105 range error=+0.000 m, bearing error=-0.00 deg
+105/105 range error=+0.000 m, bearing error=-0.02 deg
+
+SUMMARY — errors calculated only for valid pose estimates
+Valid estimates: 97/105
+X=  0.0: 15/15 valid | mean range error=+3.46 cm | range RMSE=3.86 cm | max range error=6.40 cm | bearing RMSE=0.013 deg
+X= -1.5: 15/15 valid | mean range error=+2.99 cm | range RMSE=3.07 cm | max range error=4.37 cm | bearing RMSE=0.013 deg
+X= -3.0: 15/15 valid | mean range error=+1.87 cm | range RMSE=1.88 cm | max range error=2.18 cm | bearing RMSE=0.012 deg
+X= -4.5: 15/15 valid | mean range error=+1.36 cm | range RMSE=1.36 cm | max range error=1.49 cm | bearing RMSE=0.012 deg
+X= -6.0: 15/15 valid | mean range error=+0.41 cm | range RMSE=0.48 cm | max range error=0.86 cm | bearing RMSE=0.013 deg
+X= -7.5: 13/15 valid | mean range error=+0.07 cm | range RMSE=0.08 cm | max range error=0.12 cm | bearing RMSE=0.015 deg
+X= -8.0:  9/15 valid | mean range error=+0.01 cm | range RMSE=0.02 cm | max range error=0.02 cm | bearing RMSE=0.012 deg
+
+Results saved to: C:\Users\Fabi\Documents\00 UNI !!!\engineering\Year 4\Sem 2\SCMS\Individual project\SCMS_Individual_project_37\camera_accuracy_results\20261103_093647_203876\results.csv

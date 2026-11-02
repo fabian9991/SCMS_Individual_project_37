@@ -223,3 +223,4 @@ __marimo__/
 __pycache__/
 
 calibration/*.png
+camera_accuracy_results/**/*.png

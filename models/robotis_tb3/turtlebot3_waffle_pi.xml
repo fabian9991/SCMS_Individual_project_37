@@ -39,7 +39,7 @@
       <inertial pos="-0.064 0 0.06" mass="1.8" diaginertia="0.01 0.01 0.008"/>
       <joint type="free" name="base_joint"/>
       <!-- Forward-facing RGB camera attached to the robot -->
-      <camera name="front_camera" pos="0.09 0 0.12" xyaxes="0 -1 0 0 0 1" fovy="60"/>
+      <camera name="front_camera" pos="0.09 0 0.30" xyaxes="0 -1 0 0 0 1" fovy="60"/>
 
       <!-- Reference point for the simulated LiDAR scan -->
       <site name="lidar_site" pos="-0.049 0 0.17" size="0.005" rgba="1 0 0 1"/>
