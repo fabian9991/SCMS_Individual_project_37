@@ -1,0 +1,27 @@
+ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK
+Encoder noise enabled=True; seed=37; coefficient=0.005
+GOAL ERRORS AT DECLARED ARRIVAL (cm; truth for evaluation only)
+Goal                  Estimated distance  Actual distance  Localisation error
+GOAL 1                               5.89             7.40                1.68
+GOAL 2                               5.99            13.17               10.66
+GOAL 3                               5.94            20.71               19.60
+Charger approach                     5.99             5.10                1.22
+Charger dock                         0.82             1.22                0.71
+
+SAME-RUN ESTIMATOR COMPARISON
+Estimator         Position RMSE(cm)  Max(cm)  Final(cm)  Heading RMSE(deg)
+Fused EKF                     10.34    21.55       0.66              3.191
+Odometry only                 19.21    33.75      33.75              4.241
+Accepted camera updates: 58; position improved: 39; worsened: 19; unchanged: 0
+Mean immediate position-error reduction: +0.386 cm (positive is improvement).
+Odometry shadow uses the same noisy increments and never controls movement.
+Goal rows are sampled at first declared arrival; final docking metrics may differ after settling.
+This comparison tests estimation on one trajectory, not an odometry-only controlled mission.
+No collision detection metric is included. Q/R remain unchanged.
+
+Slip plate enabled=True; test sliding friction=0.04
+Time with actual tyre-plate contact: 14.89 s
+Accepted camera updates during tyre-plate contact: 22
+Observed tyre-plate sliding friction: [0.04]
+Left: tyre-plate contact steps=7445, wheel travel=1.625 m, accumulated absolute rolling-distance mismatch=4.62 cm (2.84% of wheel travel).
+Right: tyre-plate contact steps=6354, wheel travel=1.399 m, accumulated absolute rolling-distance mismatch=1.93 cm (1.38% of wheel travel).

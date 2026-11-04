@@ -1,0 +1,20 @@
+ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK
+Encoder noise enabled=False; seed=37; coefficient=0.005
+GOAL ERRORS AT DECLARED ARRIVAL (cm; truth for evaluation only)
+Goal                  Estimated distance  Actual distance  Localisation error
+GOAL 1                               5.89             6.31                0.44
+GOAL 2                               5.94             6.82                0.98
+GOAL 3                               5.87             6.54                0.93
+Charger approach                     3.80             3.91                0.38
+Charger dock                         1.17             1.19                0.17
+
+SAME-RUN ESTIMATOR COMPARISON
+Estimator         Position RMSE(cm)  Max(cm)  Final(cm)  Heading RMSE(deg)
+Fused EKF                      1.19     3.01       0.15              0.382
+Odometry only                  2.83     5.47       5.47              0.491
+Accepted camera updates: 49; position improved: 45; worsened: 4; unchanged: 0
+Mean immediate position-error reduction: +0.087 cm (positive is improvement).
+Odometry shadow uses the same noisy increments and never controls movement.
+Goal rows are sampled at first declared arrival; final docking metrics may differ after settling.
+This comparison tests estimation on one trajectory, not an odometry-only controlled mission.
+No collision detection metric is included. Q/R remain unchanged.

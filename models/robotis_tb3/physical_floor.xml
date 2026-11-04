@@ -1,0 +1,16 @@
+<mujocoinclude>
+  <worldbody>
+    <!-- All top faces are z=0. Floor covers the warehouse and its surroundings. -->
+    <geom name="floor" type="box" pos="-13.575 0 -0.05" size="6.425 20 0.05" material="groundplane"/>
+    <geom name="floor_east" type="box" pos="7.1 0 -0.05" size="12.9 20 0.05" material="groundplane"/>
+    <geom name="floor_south" type="box" pos="-6.475 -10.19 -0.05" size="0.675 9.81 0.05" material="groundplane"/>
+    <geom name="floor_north" type="box" pos="-6.475 10.185 -0.05" size="0.675 9.815 0.05" material="groundplane"/>
+    <geom name="slip_plate" type="box" pos="-6.475 -0.005 -0.05" size="0.675 0.375 0.05"
+          rgba="0.12 0.57 0.92 1" priority="1" friction="0.04 0.005 0.0001"/>
+  </worldbody>
+  <contact>
+    <!-- Preserve the caster approximation (normal force only) on the insert. -->
+    <pair geom1="rear_support_left" geom2="slip_plate" condim="1"/>
+    <pair geom1="rear_support_right" geom2="slip_plate" condim="1"/>
+  </contact>
+</mujocoinclude>
