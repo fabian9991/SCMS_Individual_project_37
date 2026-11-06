@@ -1,0 +1,5 @@
+time_s,event,details_json
+0.0,fixed_route,"{""route"": [[-4.0, 0.0], [-5.5, 1.8369701987210297e-16]], ""start_mode"": ""TRACK"", ""declared_prior"": [-4.0, 0.05, -3.141592653589793]}"
+0.0020000000000000018,status_change,"{""previous"": null, ""current"": ""TRACK"", ""route_id"": 1, ""goal_index"": 0}"
+12.034000000001022,status_change,"{""previous"": ""TRACK"", ""current"": ""DONE"", ""route_id"": 1, ""goal_index"": 0}"
+14.03400000000169,run_end,"{""outcome"": ""ESTIMATED ENDPOINT REACHED"", ""camera_counts"": {""attempts"": 29, ""detected"": 29, ""accepted"": 0, ""rejected"": 0, ""far"": 29}}"

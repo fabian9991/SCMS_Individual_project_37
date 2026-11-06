@@ -1,0 +1,8 @@
+time_s,event,details_json
+0.0,fixed_route,"{""route"": [[-4.0, 0.0], [-5.0, 1.2246467991473532e-16], [-5.0, 0.40000000000000013]], ""start_mode"": ""TRACK"", ""declared_prior"": [-4.0, 0.0, -3.141592653589793]}"
+0.0020000000000000018,status_change,"{""previous"": null, ""current"": ""TRACK"", ""route_id"": 1, ""goal_index"": 0}"
+8.833999999999953,segment_transition,"{""previous"": 0, ""current"": 1}"
+8.833999999999953,status_change,"{""previous"": ""TRACK"", ""current"": ""ALIGN"", ""route_id"": 1, ""goal_index"": 0}"
+11.934000000000989,status_change,"{""previous"": ""ALIGN"", ""current"": ""TRACK"", ""route_id"": 1, ""goal_index"": 0}"
+16.960000000000925,status_change,"{""previous"": ""TRACK"", ""current"": ""DONE"", ""route_id"": 1, ""goal_index"": 0}"
+18.9879999999998,run_end,"{""outcome"": ""ESTIMATED ENDPOINT REACHED"", ""camera_counts"": {""attempts"": 38, ""detected"": 20, ""accepted"": 0, ""rejected"": 0, ""far"": 20}}"

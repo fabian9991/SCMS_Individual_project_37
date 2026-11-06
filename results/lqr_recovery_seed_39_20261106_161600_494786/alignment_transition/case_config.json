@@ -1,0 +1,58 @@
+{
+  "case": {
+    "name": "alignment_transition",
+    "lateral": 0.0,
+    "heading_deg": 30.0,
+    "mode": "ALIGN",
+    "route": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        1.5,
+        0.0
+      ]
+    ]
+  },
+  "seed": 39,
+  "declared_prior": [
+    -4.0,
+    0.0,
+    -2.617993877991495
+  ],
+  "route_world": [
+    [
+      -4.0,
+      0.0
+    ],
+    [
+      -5.5,
+      1.8369701987210297e-16
+    ]
+  ],
+  "initial_scoring": {
+    "actual_ey": -3.792610343426466e-05,
+    "actual_eth": 0.5235982247902022,
+    "localisation_error": 7.585232630632134e-05
+  },
+  "start_covariance": [
+    [
+      0.0001,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0001,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.00030461741978670857
+    ]
+  ],
+  "note": "Known physical offset; no deliberate prior error. No truth feedback.",
+  "source_sha256": {}
+}

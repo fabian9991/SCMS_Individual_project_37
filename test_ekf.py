@@ -31,7 +31,6 @@ INITIAL_P = np.diag([0.15**2, 0.15**2, np.deg2rad(5.0)**2])
 # Provisional standard deviations: 2 cm range, 0.5 deg bearing, 5 deg heading.
 # All three come from the same corners: diagonal R ignores their correlation.
 # This is an integration test, not a calibrated covariance/consistency claim.
-# Experimental standard deviations: 5 mm, 0.05 deg, 1 deg.
 # Inflated above static-test errors to allow for motion and model mismatch.
 R_CAMERA = np.diag([
     0.02**2,

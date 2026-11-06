@@ -1,0 +1,10 @@
+COMPLETED
+{
+  "straight_slow": "completed",
+  "straight_medium": "completed",
+  "straight_cruise": "completed",
+  "turn_left": "completed",
+  "turn_right": "completed",
+  "curve_left": "completed",
+  "curve_right": "completed"
+}

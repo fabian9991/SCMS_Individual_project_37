@@ -9,6 +9,10 @@ import csv
 from datetime import datetime
 import time
 import numpy as np
+import traceback
+import test_ekf as ekf_module
+from lqr_diagnostics import ControllerLog, write_configuration
+# LQR_DIAGNOSTICS_VERSION_1
 from lidar_planner import LidarPlanner
 from test_ekf import (MarkerCamera, predict_ekf, correct_ekf, motion,
                       wrap_angle, WHEEL_RADIUS, WHEEL_SEPARATION, MARKER_XY, CAMERA_OFFSET)
@@ -46,7 +50,7 @@ CAMERA_USE_RANGE = 3.0  # provisional: farther camera was worse in prior tests
 # This is a test severity, not a measured encoder specification. No noise at rest.
 # Only the EKF input is perturbed; the low-level wheel servo keeps ideal encoders.
 ENCODER_NOISE_ENABLED = True
-ENCODER_NOISE_SEED = 41
+ENCODER_NOISE_SEED = 37
 ENCODER_NOISE_M_PER_SQRT_M = 0.005
 USE_WHEEL_TRAVEL_Q = True
 
@@ -149,14 +153,18 @@ class Tracker:
         self.segment = 0
         self.mode = 'ALIGN'
         self.route = np.zeros((2,2))
+        self.diagnostics = {}
         # Gain scheduling for the nonzero speeds used near segment endpoints.
         self.speeds = np.array([0.025, 0.05, 0.075, 0.10, 0.13, 0.16])
         self.gains = [lqr_gain(v)[0] for v in self.speeds]
 
     def command(self, pose, endpoint_tol=0.02):
+        self.diagnostics = {}
         if self.mode == 'DONE':
             return 0., 0., 0., 0.
         a, b = self.route[self.segment:self.segment+2]
+        self.diagnostics = dict(a=a.copy(), b=b.copy(), segment=self.segment,
+                                lqr_active=False)
         delta = b-a
         length = np.linalg.norm(delta)
         tangent = delta/length
@@ -185,7 +193,9 @@ class Tracker:
             return 0., 0., ey, eth
         v = float(np.clip(0.6*max(remaining, 0), 0.025, V_CRUISE))
         K = self.gains[int(np.argmin(abs(self.speeds-v)))]
-        omega = float(np.clip(-K @ np.array([ey,eth]), -OMEGA_MAX, OMEGA_MAX))
+        raw_omega = float(-K @ np.array([ey,eth]))
+        omega = float(np.clip(raw_omega, -OMEGA_MAX, OMEGA_MAX))
+        self.diagnostics.update(lqr_active=True, raw_omega=raw_omega)
         return v, omega, ey, eth
 
 
@@ -200,8 +210,11 @@ class Navigator:
         self.next_map=0.
         self.next_plan=0.
         self.plan_status='waiting'
+        self.route_id = 0
+        self.events = []
 
     def command(self,pose,ranges,t):
+        self.tracker.diagnostics = {}
         if self.mode=='DONE': return 0.,0.,0.,0.
         if t>=self.next_map:
             self.planner.update(pose,ranges)
@@ -222,6 +235,9 @@ class Navigator:
             remaining=self.tracker.route[self.tracker.segment+1:]
             points=np.vstack([pose[:2],remaining])
             if not all(self.planner.line_clear(a,b) for a,b in zip(points[:-1],points[1:])):
+                self.events.append(dict(time_s=t, event='path_invalidated',
+                                        details=dict(route_id=self.route_id,
+                                                     reason='remaining path not clear')))
                 self.have_path=False
         if not self.have_path:
             self.mode='PLAN'
@@ -229,15 +245,28 @@ class Navigator:
             self.next_plan=t+1.
             path=self.planner.plan(pose,goal)
             self.plan_status=self.planner.status
+            self.events.append(dict(time_s=t, event='plan_result',
+                                    details=dict(goal_index=self.segment,
+                                                 planner_status=self.plan_status,
+                                                 path=None if path is None else path.tolist())))
             print(f'PLAN {GOAL_NAMES[self.segment]}: {self.plan_status}; '
                   f'points={0 if path is None else len(path)}')
             if path is None:return 0.,0.,0.,0.
-            self.tracker.route=path;self.tracker.segment=0;self.tracker.mode='ALIGN'
+            self.route_id += 1
+            self.events.append(dict(time_s=t, event='route_accepted',
+                                    details=dict(route_id=self.route_id, goal_index=self.segment,
+                                                 path=path.tolist())))
+            self.tracker.route=path;self.tracker.segment=0;self.tracker.mode='ALIGN' 
             self.have_path=True
         bay_endpoint = self.segment < len(GOALS)-1 and np.linalg.norm(self.tracker.route[-1]-goal) < 1e-6
         command=self.tracker.command(pose, BAY_ESTIMATED_TOL if bay_endpoint else 0.02)
         self.mode=self.tracker.mode
         if self.mode in ('DONE','OVERSHOOT'):
+            self.events.append(dict(time_s=t,
+                                    event='overshoot_replan' if self.mode=='OVERSHOOT' else 'route_complete_replan',
+                                    details=dict(route_id=self.route_id,
+                                                 segment=self.tracker.segment,
+                                                 pose=pose.tolist())))
             self.have_path=False;self.mode='PLAN'
             return 0.,0.,0.,0.
         return command
@@ -303,10 +332,12 @@ class WheelServo:
     """
     def __init__(self):
         self.integral = np.zeros(2)
+        self.diagnostics = dict(raw=np.zeros(2))
 
     def command(self, desired, measured, dt, stop=False):
         if stop:
             self.integral[:] = 0
+            self.diagnostics = dict(raw=np.zeros(2))
             return np.zeros(2)
         error = desired-measured
         proposed = np.clip(self.integral+2.0*error*dt, -3., 3.)
@@ -314,7 +345,9 @@ class WheelServo:
         saturated = np.clip(raw, -7.88, 7.88)
         keep = (raw == saturated) | ((raw-saturated)*error <= 0)
         self.integral[keep] = proposed[keep]
-        return np.clip(desired+0.5*error+self.integral, -7.88, 7.88)
+        output_raw = desired+0.5*error+self.integral
+        self.diagnostics = dict(raw=output_raw.copy())
+        return np.clip(output_raw, -7.88, 7.88)
 
 
 class Lidar:
@@ -394,7 +427,10 @@ def write_records(path, fields, records):
         writer.writerows(records)
 
 
-def main():
+def main(seed=None):
+    global ENCODER_NOISE_SEED
+    if seed is not None:
+        ENCODER_NOISE_SEED = int(seed)
     import mujoco
     import mujoco.viewer
     scene = ROOT / 'models/robotis_tb3/scene_assignment_plate.xml'
@@ -466,6 +502,21 @@ def main():
     clearance=np.nan
     rows=[]
     outcome='Viewer closed'
+    failure = None
+    diagnostics = ControllerLog(run_dir, WHEEL_RADIUS, WHEEL_SEPARATION)
+    write_configuration(run_dir/'run_config.json', dict(
+        encoder_noise_enabled=ENCODER_NOISE_ENABLED, encoder_noise_seed=ENCODER_NOISE_SEED,
+        encoder_noise_m_per_sqrt_m=ENCODER_NOISE_M_PER_SQRT_M,
+        use_wheel_travel_Q=USE_WHEEL_TRAVEL_Q, slip_plate_enabled=SLIP_PLATE_ENABLED,
+        camera_R=ekf_module.R_CAMERA, camera_max_range_m=CAMERA_USE_RANGE,
+        camera_dt_s=DT_CAMERA, control_dt_s=DT_CONTROL, physics_dt_s=model.opt.timestep,
+        wheel_radius_m=WHEEL_RADIUS, wheel_separation_m=WHEEL_SEPARATION,
+        cruise_v_m_s=V_CRUISE, omega_max_rad_s=OMEGA_MAX,
+        gains=[dict(v=float(speed), K=lqr_gain(speed)[0]) for speed in tracker.speeds],
+        numpy_version=np.__version__, mujoco_version=mujoco.__version__,
+        note='Diagnostics only: controller and estimator settings unchanged.'),
+        sources=[Path(__file__), Path(ekf_module.__file__), ROOT/'lidar_planner.py',
+                 ROOT/'lqr_diagnostics.py', *sorted((ROOT/'models/robotis_tb3').glob('*.xml'))])
     print('Output folder:', run_dir)
     print('ALL 3 GOALS + VISUAL DOCK: EKF feedback, LQR route, LiDAR stop')
     print(f'Encoder noise: {ENCODER_NOISE_ENABLED}; seed={ENCODER_NOISE_SEED}; '
@@ -566,9 +617,13 @@ def main():
                                 tracker.have_path=False
                         else:
                             blocked_since=None
-                        data.ctrl[motors]=servo.command(wheel_targets(v,omega),rates,elapsed,stop)
+                        desired_wheels = wheel_targets(v,omega)
+                        data.ctrl[motors]=servo.command(desired_wheels,rates,elapsed,stop)
                         # Evaluation-only ground truth below, never passed to tracker/EKF.
                         truth=evaluation_pose(data,base)
+                        diagnostics.record(t, elapsed, tracker, servo, pose, truth,
+                                           v, omega, desired_wheels, rates,
+                                           data.ctrl[motors].copy(), stop, status, clearance)
                         if status=='DOCKED':
                             record_goal('Charger dock',DOCK_POSE,t)
                         rows.append([t,*pose,*truth,*np.diag(P),tracker.segment,ey,eth,v,omega,
@@ -591,9 +646,6 @@ def main():
                         if docking_started is not None and t-docking_started>60:
                             outcome='Docking timeout: visual confirmation or alignment not achieved'
                             break
-                        if tracker.mode=='OVERSHOOT':
-                            outcome='Stopped: segment overshoot; inspect tracking log'
-                            break
                         if blocked_since is not None and t-blocked_since>15:
                             outcome='Stopped: LiDAR blockage persisted 15 seconds despite replanning'
                             break
@@ -604,9 +656,20 @@ def main():
                 delay=model.opt.timestep-(time.perf_counter()-wall)
                 if delay>0:
                     time.sleep(delay)
+    except KeyboardInterrupt:
+        outcome='Interrupted by user; partial results saved'
+    except Exception as exc:
+        failure = exc
+        outcome=f'Error: {type(exc).__name__}: {exc}; partial results saved'
+        (run_dir/'error.txt').write_text(traceback.format_exc(), encoding='utf-8')
     finally:
         data.ctrl[motors]=0
-        camera.close()
+        try:
+            camera.close()
+        finally:
+            diagnostics.event(data.time-start, 'run_end', outcome=outcome)
+            diagnostics.close()
+            (run_dir/'run_status.txt').write_text(outcome+'\n', encoding='utf-8')
     print('\nNAVIGATION RESULT:',outcome)
     if rows:
         print('Final estimated pose:',pose)
@@ -671,9 +734,7 @@ def main():
                 summary.append(f'{name:22s} NOT REACHED')
             else:
                 summary.append(f"{name:22s} {100*record['estimated_distance_m']:18.2f} {100*record['actual_distance_m']:16.2f} {100*record['fused_position_error_m']:19.2f}")
-                reached_bays = sum(
-            name in recorded_goals for name in GOAL_NAMES[:-1]
-        )
+        reached_bays = sum(name in recorded_goals for name in GOAL_NAMES[:-1])
         summary.append(
             f"Bay arrivals declared: {reached_bays}/{len(GOAL_NAMES)-1} "
             f"using a {100*BAY_ESTIMATED_TOL:g} cm estimated-position threshold."
@@ -697,7 +758,9 @@ def main():
                     'Goal rows are sampled at first declared arrival; final docking metrics may differ after settling.',
                     'This comparison tests estimation on one trajectory, not an odometry-only controlled mission.',
                     'No collision detection metric is included.',
-                    'Camera SD settings: range=0.02 m, bearing=0.5 deg, heading=5.0 deg.',]
+                    f'Camera SD settings: range={np.sqrt(ekf_module.R_CAMERA[0,0]):g} m, '
+                    f'bearing={np.degrees(np.sqrt(ekf_module.R_CAMERA[1,1])):g} deg, '
+                    f'heading={np.degrees(np.sqrt(ekf_module.R_CAMERA[2,2])):g} deg.',]
         summary += ['', *plate.summary()]
         report='\n'.join(summary)+'\n'
         (run_dir/'summary.txt').write_text(report,encoding='utf-8')
@@ -706,5 +769,15 @@ def main():
         print('Latest camera-derived pose:',docking.visual_pose)
         print('Consecutive docking confirmations:',docking.confirmations)
 
+    if not rows:
+        (run_dir/'summary.txt').write_text(outcome+'\nNo control samples recorded.\n', encoding='utf-8')
+    if failure is not None:
+        raise failure
+
 if __name__=='__main__':
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--seed', type=int, default=None,
+                        help='Override the noise seed for this run only')
+    args = parser.parse_args()
+    main(seed=args.seed)

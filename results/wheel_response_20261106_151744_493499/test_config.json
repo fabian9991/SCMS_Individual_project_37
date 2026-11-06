@@ -1,0 +1,66 @@
+{
+  "test": "Current wheel servo, no controller tuning",
+  "cases": [
+    [
+      "straight_slow",
+      0.025,
+      0.0,
+      3.0
+    ],
+    [
+      "straight_medium",
+      0.1,
+      0.0,
+      3.0
+    ],
+    [
+      "straight_cruise",
+      0.16,
+      0.0,
+      3.0
+    ],
+    [
+      "turn_left",
+      0.0,
+      0.5,
+      2.5
+    ],
+    [
+      "turn_right",
+      0.0,
+      -0.5,
+      2.5
+    ],
+    [
+      "curve_left",
+      0.1,
+      0.3,
+      3.0
+    ],
+    [
+      "curve_right",
+      0.1,
+      -0.3,
+      3.0
+    ]
+  ],
+  "stop_time_s": 2.0,
+  "control_dt_s": 0.05,
+  "physics_dt_s": 0.002,
+  "slip_plate_enabled": false,
+  "feedback": "Ideal wheel encoder rates, matching mission WheelServo",
+  "encoder_noise_in_this_test": false,
+  "note": "Noise is injected only into the mission EKF, which this inner-loop test does not run.",
+  "mujoco_version": "3.17.0",
+  "source_sha256": {
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\test_wheel_response.py": "43ebd768288831f202c0678df61a1e5029841b312ba734751d381a05ff6c62a5",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\navigate_all_goals.py": "9a917eb7550e274a2f1d7001fa324e69a788b6ab6f337c5af21c3b8efc845ae1",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\physical_floor.xml": "c097fe23c3fd464c89603413c1a52f64d8487bdeb597fc57f359763a9d0dfd6f",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\scene_assignment.xml": "5f4c9a0d28b297e4bf39ef566c72e89b1f988fcd763747ab2691a76a2f965a3c",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\scene_assignment_plate.xml": "36a77030c39fad3166ae72744624150d16416b4e356b78b5c06e1cd411f979ca",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\scene_turtlebot3_burger.xml": "a9ffd4ce04009bba3f60246403cdc81195dd97ea6a4f4694fc908895c351942b",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\scene_turtlebot3_waffle_pi.xml": "d985661637fb1155c57721a1ab6936bd424ad9155859c73e1f3edc839c1fe4e0",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\turtlebot3_burger.xml": "ace08e8f6e40c7c03d0eb297d3f3222c4d581e887a9e375d8c59d529f7651774",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\turtlebot3_waffle_pi.xml": "c4a770f1ee3628b19b6ffac2cbf542d127bc2790e7a4408070eca16d6d5eefbb"
+  }
+}

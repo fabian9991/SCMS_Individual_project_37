@@ -1,0 +1,20 @@
+ESTIMATED ENDPOINT REACHED
+{
+  "initial": {
+    "actual_ey": -0.049999999931042066,
+    "actual_eth": -5.508080995753062e-07,
+    "localisation_error": 7.585232630450215e-05
+  },
+  "arrival": {
+    "time_s": 11.984000000001005,
+    "estimated_distance_m": 0.01989576682382656,
+    "actual_distance_m": 0.017555587518251356
+  },
+  "camera_counts": {
+    "attempts": 28,
+    "detected": 28,
+    "accepted": 0,
+    "rejected": 0,
+    "far": 28
+  }
+}
