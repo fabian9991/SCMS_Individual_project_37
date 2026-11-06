@@ -53,9 +53,35 @@ def motion(pose, wheel_changes):
     return result, F
 
 
-def predict_ekf(pose, P, wheel_changes, dt):
+def predict_ekf(pose, P, wheel_changes, dt, wheel_noise_coeff=None):
     result, F = motion(pose, wheel_changes)
-    P = F @ P @ F.T + Q_RATE * dt
+
+    if wheel_noise_coeff is None:
+        # Original model: covariance added per second.
+        Q = Q_RATE * dt
+    else:
+        # Wheel changes arrive in radians. Convert to metres.
+        dl, dr = WHEEL_RADIUS * np.asarray(wheel_changes, dtype=float)
+
+        # The simulator makes each wheel's error variance proportional
+        # to its travel. The EKF only has measured travel available.
+        wheel_variances = wheel_noise_coeff**2 * np.abs([dl, dr])
+
+        # First-order approximation over one small physics step.
+        # Each column describes how one wheel's travel error changes
+        # the robot's estimated x, y and heading.
+        mid_heading = pose[2] + (dr - dl) / (2 * WHEEL_SEPARATION)
+        c = np.cos(mid_heading)
+        s = np.sin(mid_heading)
+        G = np.array([
+            [0.5 * c,               0.5 * c],
+            [0.5 * s,               0.5 * s],
+            [-1 / WHEEL_SEPARATION, 1 / WHEEL_SEPARATION],
+        ])
+
+        Q = G @ np.diag(wheel_variances) @ G.T
+
+    P = F @ P @ F.T + Q
     return result, (P + P.T) / 2
 
 

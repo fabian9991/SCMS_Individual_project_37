@@ -1,0 +1,31 @@
+ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK
+Encoder noise enabled=True; seed=40; coefficient=0.005
+GOAL ERRORS AT DECLARED ARRIVAL (cm; truth for evaluation only)
+Goal                  Estimated distance  Actual distance  Localisation error
+GOAL 1                               2.97             9.33                6.80
+GOAL 2                               2.96             5.50                8.13
+GOAL 3                               3.00             8.05                7.23
+Charger approach                     5.21             3.71                1.83
+Charger dock                         1.91             2.15                0.79
+Bay objective: 0/3 within 5 cm actual at declared arrival (3 cm estimated threshold).
+GOAL 1: FAIL (9.33 cm actual)
+GOAL 2: FAIL (5.50 cm actual)
+GOAL 3: FAIL (8.05 cm actual)
+
+SAME-RUN ESTIMATOR COMPARISON
+Estimator         Position RMSE(cm)  Max(cm)  Final(cm)  Heading RMSE(deg)
+Fused EKF                      9.92    22.13       0.69              2.875
+Odometry only                 19.84    37.94      37.93              4.096
+Accepted camera updates: 54; position improved: 33; worsened: 21; unchanged: 0
+Mean immediate position-error reduction: +0.547 cm (positive is improvement).
+Odometry shadow uses the same noisy increments and never controls movement.
+Goal rows are sampled at first declared arrival; final docking metrics may differ after settling.
+This comparison tests estimation on one trajectory, not an odometry-only controlled mission.
+No collision detection metric is included. Q/R remain unchanged.
+
+Slip plate enabled=False; test sliding friction=1.0
+Time with actual tyre-plate contact: 14.12 s
+Accepted camera updates during tyre-plate contact: 21
+Observed tyre-plate sliding friction: [1.0]
+Left: tyre-plate contact steps=7049, wheel travel=1.515 m, accumulated absolute rolling-distance mismatch=0.34 cm (0.23% of wheel travel).
+Right: tyre-plate contact steps=6492, wheel travel=1.440 m, accumulated absolute rolling-distance mismatch=0.41 cm (0.29% of wheel travel).

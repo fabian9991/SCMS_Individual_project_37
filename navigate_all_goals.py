@@ -49,7 +49,7 @@ CAMERA_USE_RANGE = 3.0  # provisional: farther camera was worse in prior tests
 ENCODER_NOISE_ENABLED = True
 ENCODER_NOISE_SEED = 37
 ENCODER_NOISE_M_PER_SQRT_M = 0.005
-
+USE_WHEEL_TRAVEL_Q = True
 
 # The plate is a collision geom in physical_floor.xml. False gives the same
 # insert normal floor traction for the control run. Set this once at launch.
@@ -423,6 +423,8 @@ def main():
     mujoco.mj_forward(model,data)
     run_label = 'encoder_noise' if ENCODER_NOISE_ENABLED else 'baseline'
     run_label += '_plate_on' if SLIP_PLATE_ENABLED else '_plate_off'
+    run_label += '_wheel_Q' if USE_WHEEL_TRAVEL_Q else '_time_Q'
+    run_label += f'_seed_{ENCODER_NOISE_SEED}'
     run_dir = ROOT / 'results' / ('navigation_' + run_label + '_' + datetime.now().strftime('%Y%m%d_%H%M%S_%f'))
     run_dir.mkdir(parents=True, exist_ok=False)
     pose, P = START_ESTIMATE.copy(), START_P.copy()
@@ -494,7 +496,15 @@ def main():
                     plate.score(raw_increments, data.xpos[wheel_bodies,:2]-hubs_before, forward, data, model.opt.timestep)
                     measured_increments=noisy_wheel_increments(raw_increments,encoder_rng)
                     accumulated_noise += WHEEL_RADIUS*(measured_increments-raw_increments)
-                    pose,P=predict_ekf(pose,P,measured_increments,model.opt.timestep)
+                    pose, P = predict_ekf(
+                        pose,
+                        P,
+                        measured_increments,
+                        model.opt.timestep,
+                        wheel_noise_coeff=(
+                            ENCODER_NOISE_M_PER_SQRT_M if USE_WHEEL_TRAVEL_Q else None
+                        ),
+                    )   
                     odom_pose,_=motion(odom_pose,measured_increments)
                     previous=enc
                     t=data.time-start
