@@ -113,7 +113,7 @@ Opening the XML in the standalone MuJoCo viewer only displays the scene. It does
 
 ## 5. Individual contribution
 
-**Fabian — individual project.** 
+**Fabian — individual project.** Covered the MuJoCo environment, camera calibration and accuracy testing, and integration of wheel odometry, EKF localisation, LQR tracking and LiDAR navigation. I also set up encoder-noise and slip-plate tests, analysed navigation and docking errors, documented the motion model and initial controllability tests, and prepared the project report and website.
 
 **John — individual project.** Responsible for the testing and refinement. Motion-model validation, controllability and observability analysis, camera calibration and measurement evaluation, EKF uncertainty tuning and repeated-seed comparisons, LQR and wheel-response evaluation, and investigation of tracking and planning failures. Contributions also included collision and slip evaluation, docking refinement and camera-detection troubleshooting, path visualisation, terminal start/pause/reset controls, the three-condition demonstration, quantitative results analysis, and preparation of the report and README.
 
