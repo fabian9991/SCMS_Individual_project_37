@@ -1,490 +1,1150 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="description"
-        content="Deformable Neural Radiance Fields creates free-viewpoint portraits (nerfies) from casually captured videos.">
-  <meta name="keywords" content="Nerfies, D-NeRF, NeRF">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>41118 Individual project 37</title>
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-
-    gtag('js', new Date());
-
-    gtag('config', 'G-PYVRSFMDRL');
-  </script>
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-        rel="stylesheet">
-
-  <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" href="./static/images/favicon.svg">
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project 37 · TurtleBot3 Visual Waypoint Navigation</title>
+<meta name="description" content="TurtleBot3 visual waypoint navigation in MuJoCo: LiDAR obstacle avoidance, wheel-camera EKF fusion, LQR tracking and camera-confirmed stand-off docking.">
+<link rel="icon" href="static/images/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="static/css/bulma.min.css">
+<link rel="stylesheet" href="static/css/index.css">
+<script src="static/js/index.js" defer></script>
 </head>
 <body>
-
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="https://keunhong.com">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
-      </a>
-
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">
-          More Research
-        </a>
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href="https://hypernerf.github.io">
-            HyperNeRF
-          </a>
-          <a class="navbar-item" href="https://nerfies.github.io">
-            Nerfies
-          </a>
-          <a class="navbar-item" href="https://latentfusion.github.io">
-            LatentFusion
-          </a>
-          <a class="navbar-item" href="https://photoshape.github.io">
-            PhotoShape
-          </a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</nav>
-
-
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Nerfies: Deformable Neural Radiance Fields</h1>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a href="https://keunhong.com">Keunhong Park</a><sup>1</sup>,</span>
-            <span class="author-block">
-              <a href="https://utkarshsinha.com">Utkarsh Sinha</a><sup>2</sup>,</span>
-            <span class="author-block">
-              <a href="https://jonbarron.info">Jonathan T. Barron</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="http://sofienbouaziz.com">Sofien Bouaziz</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.danbgoldman.com">Dan B Goldman</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://homes.cs.washington.edu/~seitz/">Steven M. Seitz</a><sup>1,2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="http://www.ricardomartinbrualla.com">Ricardo Martin-Brualla</a><sup>2</sup>
-            </span>
-          </div>
-
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>University of Washington,</span>
-            <span class="author-block"><sup>2</sup>Google Research</span>
-          </div>
-
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="https://arxiv.org/pdf/2011.12948"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://arxiv.org/abs/2011.12948"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-              <!-- Video Link. -->
-              <span class="link-block">
-                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a>
-              </span>
-              <!-- Code Link. -->
-              <span class="link-block">
-                <a href="https://github.com/google/nerfies"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-              <!-- Dataset Link. -->
-              <span class="link-block">
-                <a href="https://github.com/google/nerfies/releases/tag/0.1"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="far fa-images"></i>
-                  </span>
-                  <span>Data</span>
-                  </a>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <video id="teaser" autoplay muted loop playsinline height="100%">
-        <source src="./static/videos/teaser.mp4"
-                type="video/mp4">
-      </video>
-      <h2 class="subtitle has-text-centered">
-        <span class="dnerf">Nerfies</span> turns selfie videos from your phone into
-        free-viewpoint
-        portraits.
-      </h2>
-    </div>
-  </div>
-</section>
-
-
-<section class="hero is-light is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-        <div class="item item-steve">
-          <video poster="" id="steve" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/steve.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-chair-tp">
-          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/chair-tp.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-shiba">
-          <video poster="" id="shiba" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/shiba.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-fullbody">
-          <video poster="" id="fullbody" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/fullbody.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-blueshirt">
-          <video poster="" id="blueshirt" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/blueshirt.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-mask">
-          <video poster="" id="mask" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/mask.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-coffee">
-          <video poster="" id="coffee" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/coffee.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-toby">
-          <video poster="" id="toby" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/toby2.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            We present the first method capable of photorealistically reconstructing a non-rigidly
-            deforming scene using photos/videos captured casually from mobile phones.
-          </p>
-          <p>
-            Our approach augments neural radiance fields
-            (NeRF) by optimizing an
-            additional continuous volumetric deformation field that warps each observed point into a
-            canonical 5D NeRF.
-            We observe that these NeRF-like deformation fields are prone to local minima, and
-            propose a coarse-to-fine optimization method for coordinate-based models that allows for
-            more robust optimization.
-            By adapting principles from geometry processing and physical simulation to NeRF-like
-            models, we propose an elastic regularization of the deformation field that further
-            improves robustness.
-          </p>
-          <p>
-            We show that <span class="dnerf">Nerfies</span> can turn casually captured selfie
-            photos/videos into deformable NeRF
-            models that allow for photorealistic renderings of the subject from arbitrary
-            viewpoints, which we dub <i>"nerfies"</i>. We evaluate our method by collecting data
-            using a
-            rig with two mobile phones that take time-synchronized photos, yielding train/validation
-            images of the same pose at different viewpoints. We show that our method faithfully
-            reconstructs non-rigidly deforming scenes and reproduces unseen views with high
-            fidelity.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Abstract. -->
-
-    <!-- Paper video. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Video</h2>
-        <div class="publication-video">
-          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
-                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-    <!--/ Paper video. -->
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="container is-max-desktop">
-
-    <div class="columns is-centered">
-
-      <!-- Visual Effects. -->
-      <div class="column">
-        <div class="content">
-          <h2 class="title is-3">Visual Effects</h2>
-          <p>
-            Using <i>nerfies</i> you can create fun visual effects. This Dolly zoom effect
-            would be impossible without nerfies since it would require going through a wall.
-          </p>
-          <video id="dollyzoom" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/dollyzoom-stacked.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-      </div>
-      <!--/ Visual Effects. -->
-
-      <!-- Matting. -->
-      <div class="column">
-        <h2 class="title is-3">Matting</h2>
-        <div class="columns is-centered">
-          <div class="column content">
-            <p>
-              As a byproduct of our method, we can also solve the matting problem by ignoring
-              samples that fall outside of a bounding box during rendering.
-            </p>
-            <video id="matting-video" controls playsinline height="100%">
-              <source src="./static/videos/matting.mp4"
-                      type="video/mp4">
-            </video>
-          </div>
-
-        </div>
-      </div>
-    </div>
-    <!--/ Matting. -->
-
-    <!-- Animation. -->
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Animation</h2>
-
-        <!-- Interpolating. -->
-        <h3 class="title is-4">Interpolating states</h3>
-        <div class="content has-text-justified">
-          <p>
-            We can also animate the scene by interpolating the deformation latent codes of two input
-            frames. Use the slider here to linearly interpolate between the left frame and the right
-            frame.
-          </p>
-        </div>
-        <div class="columns is-vcentered interpolation-panel">
-          <div class="column is-3 has-text-centered">
-            <img src="./static/images/interpolate_start.jpg"
-                 class="interpolation-image"
-                 alt="Interpolate start reference image."/>
-            <p>Start Frame</p>
-          </div>
-          <div class="column interpolation-video-column">
-            <div id="interpolation-image-wrapper">
-              Loading...
-            </div>
-            <input class="slider is-fullwidth is-large is-info"
-                   id="interpolation-slider"
-                   step="1" min="0" max="100" value="0" type="range">
-          </div>
-          <div class="column is-3 has-text-centered">
-            <img src="./static/images/interpolate_end.jpg"
-                 class="interpolation-image"
-                 alt="Interpolation end reference image."/>
-            <p class="is-bold">End Frame</p>
-          </div>
-        </div>
-        <br/>
-        <!--/ Interpolating. -->
-
-        <!-- Re-rendering. -->
-        <h3 class="title is-4">Re-rendering the input video</h3>
-        <div class="content has-text-justified">
-          <p>
-            Using <span class="dnerf">Nerfies</span>, you can re-render a video from a novel
-            viewpoint such as a stabilized camera by playing back the training deformations.
-          </p>
-        </div>
-        <div class="content has-text-centered">
-          <video id="replay-video"
-                 controls
-                 muted
-                 preload
-                 playsinline
-                 width="75%">
-            <source src="./static/videos/replay.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <!--/ Re-rendering. -->
-
-      </div>
-    </div>
-    <!--/ Animation. -->
-
-
-    <!-- Concurrent Work. -->
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Related Links</h2>
-
-        <div class="content has-text-justified">
-          <p>
-            There's a lot of excellent work that was introduced around the same time as ours.
-          </p>
-          <p>
-            <a href="https://arxiv.org/abs/2104.09125">Progressive Encoding for Neural Optimization</a> introduces an idea similar to our windowed position encoding for coarse-to-fine optimization.
-          </p>
-          <p>
-            <a href="https://www.albertpumarola.com/research/D-NeRF/index.html">D-NeRF</a> and <a href="https://gvv.mpi-inf.mpg.de/projects/nonrigid_nerf/">NR-NeRF</a>
-            both use deformation fields to model non-rigid scenes.
-          </p>
-          <p>
-            Some works model videos with a NeRF by directly modulating the density, such as <a href="https://video-nerf.github.io/">Video-NeRF</a>, <a href="https://www.cs.cornell.edu/~zl548/NSFF/">NSFF</a>, and <a href="https://neural-3d-video.github.io/">DyNeRF</a>
-          </p>
-          <p>
-            There are probably many more by the time you are reading this. Check out <a href="https://dellaert.github.io/NeRF/">Frank Dellart's survey on recent NeRF papers</a>, and <a href="https://github.com/yenchenlin/awesome-NeRF">Yen-Chen Lin's curated list of NeRF papers</a>.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Concurrent Work. -->
-
-  </div>
-</section>
-
-
-<section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-    <pre><code>@article{park2021nerfies,
-  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
-  title     = {Nerfies: Deformable Neural Radiance Fields},
-  journal   = {ICCV},
-  year      = {2021},
-}</code></pre>
-  </div>
-</section>
-
-
-<footer class="footer">
-  <div class="container">
-    <div class="content has-text-centered">
-      <a class="icon-link"
-         href="./static/videos/nerfies_paper.pdf">
-        <i class="fas fa-file-pdf"></i>
-      </a>
-      <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
-        <i class="fab fa-github"></i>
-      </a>
-    </div>
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            This website is licensed under a <a rel="license"
-                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-          <p>
-            This means you are free to borrow the <a
-              href="https://github.com/nerfies/nerfies.github.io">source code</a> of this website,
-            we just ask that you link back to this page in the footer.
-            Please remember to remove the analytics code included in the header of the website which
-            you do not want on your website.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
-
+<a class="skip-link" href="#main">Skip to report</a><header class="topbar"><a class="brand" href="#top"><span class="brand-icon" aria-hidden="true">37</span><span>SCMS <span class="brand-light">/ Project 37</span></span></a><nav aria-label="Quick links"><a href="#results">Results</a><a href="https://github.com/fabian9991/SCMS_Individual_project_37" target="_blank" rel="noopener">Repository ↗</a></nav></header><div id="top"></div>
+<div class="hero-report">
+<p class="eyebrow">SENSORS &amp; CONTROL FOR MECHATRONIC SYSTEMS · TRACK A</p>
+<h1>Visual waypoint navigation<span>From wheel odometry to visual docking.</span>
+</h1>
+<p class="hero-intro">A TurtleBot3 warehouse sorting robot that plans around obstacles, visits three storage bays and uses an ArUco marker to correct its pose and dock.</p>
+<div class="hero-tags">
+<span>MuJoCo</span><span>LiDAR mapping</span><span>Wheel–camera EKF</span><span>LQR tracking</span>
+</div>
+<div class="hero-actions">
+<a class="button is-primary" href="#demo">Watch demonstration <span aria-hidden="true">↗</span></a><a class="button secondary" href="#results">Explore results ↓</a><a class="text-action" href="static/documents/project-report.pdf">Source report ↗</a>
+</div>
+<div class="finding-strip">
+<div>
+<strong>3 / 3</strong><span>Final demo missions completed</span>
+</div>
+<div>
+<strong>55.2<span>%</span></strong><span>Position RMSE reduction · noisy demo</span>
+</div>
+<div>
+<strong>&lt; 3 cm <span>/</span> 3°</strong><span>Docking tolerances met in all demos</span>
+</div>
+</div>
+<p class="hero-footnote">One seed-37 trial per demo condition. Earlier repeated-trial failures are reported below.</p>
+</div>
+<div class="report-layout">
+<aside class="contents"><button class="contents-toggle" type="button" aria-expanded="false" aria-controls="contents-nav">On this page <span aria-hidden="true">+</span></button><div id="contents-nav">
+<p class="contents-label">PROJECT REPORT</p>
+<nav aria-label="Report sections"><a href="#overview"><span>01</span>Overview</a><a href="#modelling"><span>02</span>Platform modelling</a><a href="#sensing"><span>03</span>Sensing &amp; calibration</a><a href="#estimation"><span>04</span>EKF design &amp; tuning</a><a href="#control"><span>05</span>Planning &amp; control</a><a href="#validation"><span>06</span>Controller verification</a><a href="#results"><span>07</span>Final results</a><a href="#limitations"><span>08</span>Failures &amp; trade-offs</a><a href="#resources"><span>09</span>Resources &amp; appendix</a></nav><a class="contents-pdf" href="static/documents/project-report.pdf">Download source PDF ↗</a>
+</div></aside><main id="main"><!-- OVERVIEW --><section class="report-section" id="overview" aria-labelledby="overview-title"><div class="section-heading">
+<span class="section-no">01</span><div>
+<h2 id="overview-title">System aim &amp; overview</h2>
+<p class="section-lead">A warehouse sorting mission with visual stand-off docking.</p>
+</div>
+</div>
+<p>This project simulates a warehouse sorting robot in MuJoCo. The TurtleBot3 starts in a receiving area, visits three storage bays representing delivery stops, and then drives to a charging station. It uses LiDAR to plan routes around walls and shelves, while wheel odometry predicts its position and heading. When the camera detects the charger’s ArUco marker within 3 m and the measurement is accepted, the EKF uses it to correct accumulated pose error. The LQR follows the planned path using the estimated state, and camera measurements support the final docking approach.</p>
+<p>Performance is assessed under three conditions: normal operation, added encoder noise, and encoder noise combined with a low-grip floor section.</p>
+<h3>Project targets</h3>
+<ul class="targets">
+<li>Visit all three storage bays before approaching the charger, reporting the actual position error at each bay.</li>
+<li>Complete the route with zero wall or shelf contacts.</li>
+<li>Achieve lower position RMSE with camera fusion than wheel odometry alone on the same noisy drive.</li>
+<li>Confirm docking using the camera and finish within 3 cm of the intended stand-off position and 3° of the target’s heading.</li>
+</ul>
+<h3>How the system works</h3>
+<p>The TurtleBot3 begins with a known origin and heading, along with predefined storage goals and the charging-station location. During navigation, it relies on its estimated pose rather than simulator ground truth.</p>
+<p>Wheel encoders measure wheel rotation, which the EKF uses to predict the robot’s position and heading. When an accepted camera measurement of the charger’s ArUco marker is available within 3 m, the EKF combines it with the wheel-based prediction to correct accumulated error.</p>
+<p>LiDAR detects walls, shelves and free space. The path planner uses these measurements, and the estimated robot pose to build an obstacle map and find a route towards each goal. The LQR uses the estimated position and heading to calculate steering corrections that keep the robot following this path.</p>
+<aside class="note"><strong>Estimated state only.</strong> The EKF supplies pose feedback to navigation and control. Simulator truth is reserved for evaluation; this is a known-start indoor system, not GNSS navigation.</aside><h3>Demonstration</h3>
+<div class="video-panel" id="demo"><button class="video-load" type="button" aria-label="Play the final demonstration video"><span class="play-symbol" aria-hidden="true">▶</span><span class="video-eyebrow">FINAL DEMONSTRATION</span><strong>Three conditions. One navigation system.</strong><span>Normal operation · Encoder noise · Noise + low grip</span><span class="video-action">Play video on this page</span></button></div>
+<p class="caption-line">The final demo uses the same estimator and controller settings across the three conditions. <a href="https://youtu.be/mWIeYK-iH-M" target="_blank" rel="noopener">Watch directly on YouTube ↗</a></p></section>
+<!-- MODELLING --><section class="report-section" id="modelling" aria-labelledby="modelling-title"><div class="section-heading">
+<span class="section-no">02</span><div>
+<h2 id="modelling-title">Platform modelling</h2>
+<p class="section-lead">The wheel-motion model, its assumptions, and separate controllability and observability checks.</p>
+</div>
+</div>
+<p>The TurtleBot3 Waffle Pi is modelled as a differential-drive platform. Six short MuJoCo tests with ideal encoders validate the wheel-odometry prediction below.</p>
+<h3>State, geometry and inputs</h3>
+<p>The odometry test starts at (0,0,0) in a coordinate frame fixed to the robot’s starting position. The positive x-axis points in the direction the robot initially faces, and the positive y-axis points to its left. At each simulation step, the model uses how much each wheel has rotated since the previous step to estimate the robot’s position and heading. The coordinates x and y give the estimated position of the point halfway between the wheels, in meters. The heading θ is measured in radians and increases when the robot turns anticlockwise.</p>
+<p>The state is [x, y, θ]ᵀ. The inputs ΔφL and ΔφR are the measured changes in wheel rotation between consecutive simulation steps. The physics step is 0.002 s; the navigation controller updates every 0.05 s.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Platform geometry"><table>
+<caption>Platform geometry</caption>
+<thead><tr>
+<th scope="col">Parameter</th>
+<th scope="col">Value</th>
+<th scope="col">Basis</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Wheel radius, r</th>
+<td>0.033 m</td>
+<td>Tyre STL geometry reported in the model validation</td>
+</tr>
+<tr>
+<th scope="row">Wheel separation, b</th>
+<td>0.288 m</td>
+<td>Wheel centres at +0.144 m and −0.144 m</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Wheel rotation → displacement → pose</h3>
+<p>A wheel rolling through one radian travels one radius. Using the wheel radius r = 0.033 m extracted from the STL files of the TurtleBot3 Waffle Pi left wheel, the distances travelled by the wheels are</p>
+<div class="equation" tabindex="0">Δs<sub>L</sub> = r Δφ<sub>L</sub>    Δs<sub>R</sub> = r Δφ<sub>R</sub><br>Δs = (Δs<sub>R</sub> + Δs<sub>L</sub>)/2    Δθ = (Δs<sub>R</sub> − Δs<sub>L</sub>)/b</div>
+<p>TurtleBot’s centre point travels the average of the two distances Δs. During a turn the outer wheel follows a longer arc. The difference in arc length equals the wheel separation b multiplied by the change in heading. The wheel centres are at +0.144 m and −0.144 m across the axle, giving b = 0.288 m.</p>
+<p>The model treats the motion within one step as a circular arc. Let h be half the heading change. The factor c converts signed arc length to straight line displacement between the two ends of the arc, directed along the midpoint heading.</p>
+<div class="equation" tabindex="0">h = Δθ/2    c = sin(h)/h, with c = 1 at h = 0<br>x<sub>k+1</sub> = x<sub>k</sub> + Δs c cos(θ<sub>k</sub> + h)<br>y<sub>k+1</sub> = y<sub>k</sub> + Δs c sin(θ<sub>k</sub> + h)<br>θ<sub>k+1</sub> = wrap(θ<sub>k</sub> + Δθ)</div>
+<p>Wrapping keeps heading between −π (inclusive) and +π (exclusive). For example, if both wheels rotate forward by 1 rad, each travels 0.033 m. The robot advances 3.3 cm along its current heading with zero heading change.</p>
+<h3>Assumptions</h3>
+<ul>
+<li>Level floor and planar motion.</li>
+<li>Equal, constant effective wheel radii and a rigid axle.</li>
+<li>Rolling without slip or sideways sliding in the nominal model.</li>
+<li>Constant curvature within each simulation step.</li>
+</ul>
+<h3>Validation against simulated motion</h3>
+<p>Each test started after a settling period. The model accumulated the measured wheel rotations throughout the drive and two seconds of stopping motion. MuJoCo supplied the actual final pose for evaluation in the same starting frame. The test used ideal encoder readings and no camera corrections.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Final pose after six short manoeuvres"><table>
+<caption>Final pose after six short manoeuvres</caption>
+<thead><tr>
+<th scope="col">Movement</th>
+<th scope="col">Predicted (x, y), m</th>
+<th scope="col">Actual (x, y), m</th>
+<th scope="col">Heading predicted / actual, °</th>
+<th scope="col">Position error, mm</th>
+<th scope="col">Heading error, °</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Straight</th>
+<td>0.4890, −0.0004</td>
+<td>0.4879, −0.0004</td>
+<td>−0.097 / −0.096</td>
+<td>1.1</td>
+<td>0.000</td>
+</tr>
+<tr>
+<th scope="row">Left turn</th>
+<td>−0.0003, −0.0006</td>
+<td>−0.0012, −0.0018</td>
+<td>112.782 / 112.533</td>
+<td>1.5</td>
+<td>+0.249</td>
+</tr>
+<tr>
+<th scope="row">Reverse</th>
+<td>−0.1433, −0.0000</td>
+<td>−0.1430, −0.0000</td>
+<td>0.018 / 0.018</td>
+<td>0.3</td>
+<td>0.000</td>
+</tr>
+<tr>
+<th scope="row">Right turn</th>
+<td>−0.0003, 0.0006</td>
+<td>0.0005, −0.0006</td>
+<td>−112.776 / −112.514</td>
+<td>1.4</td>
+<td>−0.262</td>
+</tr>
+<tr>
+<th scope="row">Left curve</th>
+<td>0.1874, 0.0391</td>
+<td>0.1870, 0.0384</td>
+<td>23.690 / 23.540</td>
+<td>0.9</td>
+<td>+0.150</td>
+</tr>
+<tr>
+<th scope="row">Right curve</th>
+<td>0.1874, −0.0391</td>
+<td>0.1874, −0.0385</td>
+<td>−23.688 / −23.511</td>
+<td>0.6</td>
+<td>−0.177</td>
+</tr>
+</tbody>
+</table></div>
+<p>On the straight drive, the model predicted 0.4890 m forward and MuJoCo recorded 0.4879 m, a difference of 1.1 mm. The reverse drive produced the smallest position error, 0.3 mm. On the spot turns, odometry slightly overestimated rotation in both directions. For the right turn it predicted 112.776° of rotation against 112.514° measured, a difference of 0.262°.</p>
+<p>These endpoint comparisons support the wheel-motion model for short manoeuvres under the tested conditions. The EKF prediction and standalone odometry also returned identical poses in all six tests because they use the same wheel increments and motion equations. Accuracy under encoder noise and on the slip plate is assessed separately in the navigation runs.</p>
+<h3>Controllability: can steering correct the path error?</h3>
+<p>Before running the simulation, we checked whether steering could correct both the robot’s heading and its sideways distance from the path. We entered six forward speeds (0.025–0.160 m/s) into the tracking model. All six gave rank 2, meaning steering can correct both errors. At zero forward speed, the model gave rank 1 because turning in place changes only the heading. The straight-line tracking model was therefore controllable at all six forward speeds tested.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Separate mathematical checks at fixed design speeds"><table>
+<caption>Separate mathematical checks at fixed design speeds</caption>
+<thead><tr>
+<th scope="col">Forward speed, m/s</th>
+<th scope="col">Rank of [B, AB]</th>
+<th scope="col">Meaning</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">0</th>
+<td>1</td>
+<td>Heading can change; lateral error cannot be removed immediately</td>
+</tr>
+<tr>
+<th scope="row">0.025, 0.050, 0.075, 0.100, 0.130, 0.160</th>
+<td>2 at every speed</td>
+<td>Both local tracking errors can be controlled</td>
+</tr>
+</tbody>
+</table></div>
+<details><summary>Tracking model and rank calculation</summary><div class="detail-body">
+<p>Let e = [eᵧ, eθ]ᵀ: eᵧ is the signed distance to the left of the current straight segment and eθ = wrap(θ̂ − θpath). For a straight segment, ėᵧ = v sin(eθ). Near the path this becomes ėᵧ = v eθ and ėθ = ω. Forward speed is scheduled separately.</p>
+<div class="equation" tabindex="0">A<sub>c</sub> = [[0, v], [0, 0]],   B<sub>c</sub> = [[0], [1]]<br>A = [[1, vT], [0, 1]],   B = [[vT²/2], [T]],   T = 0.05 s<br>C = [B, AB] = [[vT²/2, 3vT²/2], [T, T]]<br>det(C) = −vT³</div>
+<p>This result concerns the two-state local tracking model. It does not establish global controllability of the complete robot, feasibility of an obstacle-constrained route, or stability after saturation. The separate ALIGN mode handles large heading errors before the LQR is used.</p>
+</div></details><h3>Separate straight-line tracking test</h3>
+<p>To demonstrate the correction in MuJoCo, the robot started 5 cm to the left of a 1.5 m straight path, facing parallel to it. The LQR used the pose estimated from the wheel encoders to steer the robot towards the line. Camera corrections, added encoder noise and the slip plate were disabled for this baseline test. The simulator’s actual position was used only to measure performance. The run ended when the robot estimated it was within 2 cm of the path endpoint.</p>
+<figure class="medium"><a class="figure-link" href="static/images/tracking-baseline.jpg" target="_blank" rel="noopener" aria-label="Open full-size figure: Actual and encoder-estimated sideways error falling from 5 cm towards zero over about 12 seconds."><img src="static/images/tracking-baseline.jpg" alt="Actual and encoder-estimated sideways error falling from 5 cm towards zero over about 12 seconds." loading="lazy" decoding="async" width="640" height="480"></a><figcaption>Figure 1. Baseline 1.5 m drive. Zero sideways error is the intended line. <span class="figure-hint">Open image to enlarge ↗</span></figcaption></figure><p>The robot reduced its actual sideways error from 5.00 cm to 0.20 cm (2 mm), correcting 96% of the initial offset without crossing the line. The sideways root mean square error (RMSE) was 2.01 cm over the whole drive, including the initial 5 cm offset. Together, the results show that steering can correct both tracking errors in the model and that the LQR successfully brought the simulated robot close to the intended line.</p>
+<h3>Observability: can measurements distinguish the pose?</h3>
+<p>Wheel encoders estimate movement from the known starting position. If the wheels slip, the encoders alone cannot tell how far the robot moved. When the camera sees the known charger marker, it measures range, bearing and heading. At the docking target, the camera measurement matrix had rank 3, meaning these measurements can distinguish changes in all three pose components: x, y and heading.</p>
+<aside class="note">The full range–bearing–heading Jacobian and its rank calculation appear in <a href="#estimation">EKF design</a>. The rank result is local; it does not guarantee accurate localisation while the marker is out of view.</aside><details><summary>Earlier supporting observability experiment</summary><div class="detail-body">
+<p>With encoder noise and the slip plate enabled, wheel odometry alone gave a position RMSE of 17.58 cm. Using the same wheel readings and adding camera corrections reduced this to 8.49 cm, a 52% reduction on this drive. Of the 51 accepted camera updates, 46 immediately improved the estimated position.</p>
+<p>This is an earlier encoder-noise + slip trial. It is supporting evidence, separate from the final demonstration results.</p>
+</div></details></section>
+<!-- SENSING --><section class="report-section" id="sensing" aria-labelledby="sensing-title"><div class="section-heading">
+<span class="section-no">03</span><div>
+<h2 id="sensing-title">Sensing &amp; calibration</h2>
+<p class="section-lead">Camera calibration, measurement availability, encoder noise and coordinate frames.</p>
+</div>
+</div>
+<p>The camera was calibrated and its marker corner-refinement settings were tested to support reliable measurements for EKF localisation and docking.</p>
+<p>Checkerboard images with known corner spacing were used to estimate the camera’s focal lengths and image centre. These parameters convert image coordinates into measurements used to estimate the marker’s distance and orientation.</p>
+<figure class="medium"><a class="figure-link" href="static/images/checkerboard.jpg" target="_blank" rel="noopener" aria-label="Open full-size figure: Calibration checkerboard with the detected internal corners connected in coloured rows."><img src="static/images/checkerboard.jpg" alt="Calibration checkerboard with the detected internal corners connected in coloured rows." loading="lazy" decoding="async" width="1050" height="827"></a><figcaption>Figure 2. Detected checkerboard corners used for intrinsic camera calibration. <span class="figure-hint">Open image to enlarge ↗</span></figcaption></figure><div class="table-wrap" tabindex="0" role="region" aria-label="Camera calibration"><table>
+<caption>Camera calibration</caption>
+<thead><tr>
+<th scope="col">Setting or result</th>
+<th scope="col">Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Internal checkerboard corners</th>
+<td>9 × 6</td>
+</tr>
+<tr>
+<th scope="row">Square size</th>
+<td>0.10 m</td>
+</tr>
+<tr>
+<th scope="row">Calibration resolution</th>
+<td>1280 × 960</td>
+</tr>
+<tr>
+<th scope="row">Training reprojection RMS</th>
+<td>0.101 pixels</td>
+</tr>
+<tr>
+<th scope="row">Mean validation reprojection RMS</th>
+<td>0.053 pixels</td>
+</tr>
+<tr>
+<th scope="row">Navigation resolution</th>
+<td>2560 × 1920</td>
+</tr>
+</tbody>
+</table></div>
+<p>The low reprojection error shows that the calibrated model closely matched the detected corner positions.</p>
+<p>The calibration parameters are scaled for the higher navigation resolution while retaining the same field of view. Distortion was fixed at zero because the simulated camera uses an ideal pinhole model.</p>
+<p>Reprojection error checks how closely predicted image corners match detected corners. It does not directly establish marker pose accuracy; the following ArUco tests assess that measurement in use.</p>
+<h3>Marker corner-refinement tuning</h3>
+<p>Corner refinement improves the estimated pixel positions of the marker’s corners, affecting the calculated distance and orientation. Nine combinations of window size and relative window parameter were tested at 105 robot poses. Camera measurements were compared with simulator truth.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Nine configurations at 105 robot poses"><table>
+<caption>Nine configurations at 105 robot poses</caption>
+<thead><tr>
+<th scope="col">Window size</th>
+<th scope="col">Relative parameter</th>
+<th scope="col">Range RMSE, cm</th>
+<th scope="col">Max absolute range error, cm</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">4</th>
+<td>0.3</td>
+<td>2.94</td>
+<td>8.34</td>
+</tr>
+<tr>
+<th scope="row">4</th>
+<td>0.4</td>
+<td>2.57</td>
+<td>8.34</td>
+</tr>
+<tr>
+<th scope="row">4</th>
+<td>0.5</td>
+<td>2.15</td>
+<td>6.40</td>
+</tr>
+<tr>
+<th scope="row">6</th>
+<td>0.3</td>
+<td>2.94</td>
+<td>8.34</td>
+</tr>
+<tr>
+<th scope="row">6</th>
+<td>0.4</td>
+<td>2.55</td>
+<td>8.34</td>
+</tr>
+<tr>
+<th scope="row">6</th>
+<td>0.5</td>
+<td>2.08</td>
+<td>6.40</td>
+</tr>
+<tr>
+<th scope="row">8</th>
+<td>0.3</td>
+<td>2.94</td>
+<td>8.34</td>
+</tr>
+<tr>
+<th scope="row">8</th>
+<td>0.4</td>
+<td>2.55</td>
+<td>8.34</td>
+</tr>
+<tr class="selected-row">
+<th scope="row">8</th>
+<td>0.5</td>
+<td>2.08</td>
+<td>6.40</td>
+</tr>
+</tbody>
+</table></div>
+<p>All settings produced 97 valid estimates from 105 poses, with bearing RMSE approximately 0.013°. Window 8 and relative parameter 0.5 were selected because they produced the lowest range RMSE. Their improvement over window 6 and relative 0.5 was small.</p>
+<h3>Why camera corrections are limited to 3 m</h3>
+<p>With the selected settings, range accuracy improved as the robot approached the marker, located near world x = −8.7 m.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Range accuracy with the selected refinement settings"><table>
+<caption>Range accuracy with the selected refinement settings</caption>
+<thead><tr>
+<th scope="col">Robot world x, m</th>
+<th scope="col">Range RMSE, cm</th>
+<th scope="col">Valid estimates</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">0.0</th>
+<td>3.86</td>
+<td>15/15</td>
+</tr>
+<tr>
+<th scope="row">−1.5</th>
+<td>3.07</td>
+<td>15/15</td>
+</tr>
+<tr>
+<th scope="row">−3.0</th>
+<td>1.62</td>
+<td>15/15</td>
+</tr>
+<tr>
+<th scope="row">−4.5</th>
+<td>0.95</td>
+<td>15/15</td>
+</tr>
+<tr class="selected-row">
+<th scope="row">−6.0</th>
+<td>0.32</td>
+<td>15/15</td>
+</tr>
+<tr>
+<th scope="row">−7.5</th>
+<td>0.05</td>
+<td>13/15</td>
+</tr>
+<tr>
+<th scope="row">−8.0</th>
+<td>0.01</td>
+<td>9/15</td>
+</tr>
+</tbody>
+</table></div>
+<p>At world x = −6 m, the robot was approximately 2.7 m from the marker and range RMSE was 0.32 cm. These measurements support a conservative 3 m acceptance limit; they do not establish a uniquely optimal range cutoff.</p>
+<p>Close angled approaches sometimes produced no valid estimate. The reported errors include valid detections only. A marker must remain detectable and in view; low error among successful detections does not guarantee availability. A later near-dock detection failure and fallback are discussed in the limitations section.</p>
+<h3>Encoder noise and physical disturbance</h3>
+<p>Independent Gaussian noise is added to the wheel encoder measurements used for pose estimation. The coefficient 0.005 m/√m gives a cumulative wheel-distance standard deviation of 5 mm over 1 m. This is a chosen test severity, not a measured sensor specification.</p>
+<p>Seed 37 makes the demonstration noise repeatable. The earlier Q and R comparisons use seeds 37–42. Final EKF uncertainty values and their justification appear in the next section.</p>
+<div class="equation" tabindex="0">ε<sub>L,R</sub> ∼ N(0, k² |Δs<sub>L,R</sub>|),   k = 0.005 m/√m</div>
+<p>The low-grip insert is a separate physical disturbance: sliding friction changes from 1.0 to 0.04. It affects tyre contact dynamics, whereas the encoder noise perturbs the wheel measurements used for localisation. The physical insert remains in the scene in all final demo conditions.</p>
+<details><summary>Earlier noise-handling result — original time-based Q</summary><div class="detail-body">
+<p>This historical seed 37 run used encoder noise with normal traction and the original time-based process covariance. It is not the final wheel-travel-Q demo.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Same-drive estimator comparison"><table>
+<caption>Same-drive estimator comparison</caption>
+<thead><tr>
+<th scope="col">Metric</th>
+<th scope="col">Wheel-only</th>
+<th scope="col">Fused EKF</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Position RMSE</th>
+<td>18.96 cm</td>
+<td>8.58 cm</td>
+</tr>
+<tr>
+<th scope="row">Final localisation error</th>
+<td>28.73 cm</td>
+<td>0.94 cm</td>
+</tr>
+<tr>
+<th scope="row">Heading RMSE</th>
+<td>2.504°</td>
+<td>2.564°</td>
+</tr>
+</tbody>
+</table></div>
+<p>Camera fusion reduced position RMSE by approximately 55%; heading RMSE slightly increased. The actual docking error was 2.02 cm. This demonstrates useful position correction for this trial, not noise-free performance.</p>
+</div></details><h3>Coordinate frames and transformations</h3>
+<p>Figure distinguishes the world frame from the robot and sensor frames. The navigation mission begins at world pose (0, 0, π); the earlier odometry validation uses its own start-aligned frame with heading zero. These are different coordinate conventions, not different motion models.</p>
+<figure class=""><a class="figure-link" href="static/images/coordinate-frames.jpg" target="_blank" rel="noopener" aria-label="Open full-size figure: World pose transformation and robot-frame mounting offsets for the camera and LiDAR."><img src="static/images/coordinate-frames.jpg" alt="World pose transformation and robot-frame mounting offsets for the camera and LiDAR." loading="lazy" decoding="async" width="1892" height="768"></a><figcaption>Figure 3. World, robot, camera and LiDAR frames. The left panel is a schematic, not the warehouse layout. <span class="figure-hint">Open image to enlarge ↗</span></figcaption></figure><p>The world frame is fixed to the scene. Goals, the known marker and the EKF position are expressed in it. The base frame moves with the robot: x points forward, y left and z up. At the declared initial heading of π, robot forward points along world negative x. The earlier standalone odometry validation used its own start-relative frame, which is distinct from this mission world frame.</p>
+<p>The LiDAR is mounted at (−0.049, 0, 0.17) m relative to the base, with aligned axes. A measured beam is converted to a horizontal Cartesian point, translated by the mounting offset, and rotated and translated into the world using the estimated pose. A hit 1 m directly forward is therefore (0.951, 0) m relative to the base, or approximately (−0.951, 0) m at the declared launch pose.</p>
+<p>The camera is mounted at (0.09, 0, 0.30) m. OpenCV uses right, down and forward axes; MuJoCo uses right, up and backward, requiring a sign reversal of the latter two coordinates. The planar EKF accounts for the horizontal camera offset and assumes negligible pitch and roll. It compares image-derived range, bearing and marker-derived heading against measurements predicted from the estimated pose and known marker. Simulator pose is not supplied to this calculation.</p>
+<details><summary>Frame transformation equations</summary><div class="detail-body"><figure class=""><a class="figure-link" href="static/images/frame-equations.jpg" target="_blank" rel="noopener" aria-label="Open full-size figure: Equations for transforming LiDAR hits and the camera origin into the world using the estimated robot pose."><img src="static/images/frame-equations.jpg" alt="Equations for transforming LiDAR hits and the camera origin into the world using the estimated robot pose." loading="lazy" decoding="async" width="1892" height="383"></a><figcaption>Sensor-to-world transforms and camera-axis conventions from the report. <span class="figure-hint">Open image to enlarge ↗</span></figcaption></figure></div></details></section>
+<!-- ESTIMATION --><section class="report-section" id="estimation" aria-labelledby="estimation-title"><div class="section-heading">
+<span class="section-no">04</span><div>
+<h2 id="estimation-title">EKF design &amp; tuning</h2>
+<p class="section-lead">A single estimator combines wheel prediction with accepted camera measurements.</p>
+</div>
+</div>
+<p>The estimated state is robot position and heading, [x, y, θ]. Each prediction uses measured left and right wheel rotation in the circular-arc motion model. The state Jacobian F propagates covariance using P⁻ = FPFᵀ + Q. Camera observations contain horizontal range, bearing and marker-derived world heading. The observation model includes the 0.09 m forward camera offset. Angular residuals are wrapped to ±π. Accepted observations update the pose and covariance using the Kalman gain and Joseph covariance update. The controller receives the estimated pose; simulator pose is used for evaluation.</p>
+<h3>Wheel-driven prediction uncertainty</h3>
+<p>For wheel-travel Q, each wheel has travel-error variance k²|Δs|, where k = 0.005 m/√m. A small-step wheel-to-pose Jacobian G maps these variances into Q = G diag(k²|ΔsL|, k²|ΔsR|) Gᵀ. The implementation uses measured travel and the midpoint heading as approximations. This models the deliberately injected encoder errors; additional slip and wheel-model errors remain possible. The mission starts with standard deviations of 1 cm in x and y and 1° in heading.</p>
+<div class="equation" tabindex="0">P⁻ = F P Fᵀ + Q<br>F = [[1, 0, −δy], [0, 1, δx], [0, 0, 1]]<br>ψ = θ̂ + Δθ/2<br>G = [[cos ψ/2, cos ψ/2], [sin ψ/2, sin ψ/2], [−1/b, 1/b]]<br>Q = G diag(k²|Δs<sub>L</sub>|, k²|Δs<sub>R</sub>|) Gᵀ</div>
+<p>The displacement terms δx and δy come from the circular-arc motion model. G is the implemented small-step approximation. This Q models the injected wheel-distance errors; it is not an exact model of slip.</p>
+<h3>Camera observation and local observability</h3>
+<p>Let the known marker position be m = (−8.697, 0) m and forward camera offset a = 0.09 m. The camera centre is c = [x + a cos θ, y + a sin θ]ᵀ. Define d_x = m_x − c_x, d_y = m_y − c_y, q = d_x² + d_y² and ρ = √q. The predicted measurement is h(x) = [ρ, wrap(atan2(d_y, d_x) − θ), wrap(θ)]ᵀ. The third measurement is world heading reconstructed from the observed marker normal and the known marker orientation.</p>
+<div class="equation" tabindex="0">H₁ = [−d<sub>x</sub>/ρ, −d<sub>y</sub>/ρ, a(d<sub>x</sub> sin θ − d<sub>y</sub> cos θ)/ρ]<br>H₂ = [d<sub>y</sub>/q, −d<sub>x</sub>/q, −1 − a(d<sub>x</sub> cos θ + d<sub>y</sub> sin θ)/q]<br>H₃ = [0, 0, 1]<br>det(H) = 1/ρ for ρ &gt; 0</div>
+<p>For ρ &gt; 0, det(H) = 1/ρ, so H has rank 3. An accepted range–bearing–heading observation locally distinguishes all three planar pose components. This is a local, instantaneous measurement-rank check; marker visibility, pose ambiguity, calibration bias and correlated measurement errors still limit practical accuracy. Without the camera, wheel increments propagate a pose from its initial condition but provide no independent absolute- position correction.</p>
+<h3>Measurement acceptance and correction</h3>
+<div class="equation" tabindex="0">ν = z − h(x̂⁻)<br>S = H P⁻ Hᵀ + R    K = P⁻ Hᵀ S⁻¹<br>x̂⁺ = x̂⁻ + Kν<br>P⁺ = (I − KH)P⁻(I − KH)ᵀ + KRKᵀ</div>
+<p>Angular residuals are wrapped. Nonfinite innovations and NIS = νᵀS⁻¹ν greater than 25 are rejected. The Joseph covariance update is followed by symmetrisation. The broad NIS threshold is a fixed diagnostic gate, not a calibrated probability guarantee.</p>
+<h3>Selected estimator configuration</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Final estimator settings"><table>
+<caption>Final estimator settings</caption>
+<thead><tr>
+<th scope="col">Parameter</th>
+<th scope="col">Selection</th>
+<th scope="col">Reason / scope</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Process covariance Q</th>
+<td>Wheel-travel based; k = 0.005 m/√m</td>
+<td>Matches the form of injected encoder error</td>
+</tr>
+<tr>
+<th scope="row">Camera standard deviations</th>
+<td>Range 0.02 m; bearing 0.5°; world heading 5°</td>
+<td>Original conservative R retained after paired trials</td>
+</tr>
+<tr>
+<th scope="row">Initial standard deviations</th>
+<td>x and y: 0.01 m; heading: 1°</td>
+<td>Declared known-start uncertainty</td>
+</tr>
+<tr>
+<th scope="row">Camera acceptance</th>
+<td>Measured range ≤ 3 m; NIS ≤ 25</td>
+<td>Range, image-quality and innovation checks</td>
+</tr>
+<tr>
+<th scope="row">Observation period</th>
+<td>0.5 s</td>
+<td>Separate from the 0.05 s control period</td>
+</tr>
+</tbody>
+</table></div>
+<p>The selected camera covariance is R = diag(0.02², (0.5π/180)², (5π/180)²), ordered as range, bearing and heading. Its diagonal values are approximately [4.00 × 10⁻⁴, 7.62 × 10⁻⁵, 7.62 × 10⁻³] in m², rad² and rad². These are conservative mission tuning values supported by the comparison. The smaller covariance measured in the static tests is retained as sensor-characterisation evidence.</p>
+<h3>Tuning evidence: time-based Q versus wheel-travel Q</h3>
+<p>We ran each Q model with seeds 37 - 42, using the same encoder-noise strength, normal floor traction, camera settings and LQR gains. Each seed selects a repeatable sequence of encoder errors. Goal 2 provides a direct check of prediction uncertainty because all five completed pairs reached it before the first accepted camera update. Both filters therefore produced the same estimated heading within each pair.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Earlier paired Q trials, seeds 37–42"><table>
+<caption>Earlier paired Q trials, seeds 37–42</caption>
+<thead><tr>
+<th scope="col">Measure</th>
+<th scope="col">Time-based Q</th>
+<th scope="col">Wheel-travel Q</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Goal 2 heading error RMS, five completed seeds</th>
+<td>3.47°</td>
+<td>3.47°</td>
+</tr>
+<tr>
+<th scope="row">Goal 2 predicted heading uncertainty, RMS</th>
+<td>1.89°</td>
+<td>3.81°</td>
+</tr>
+<tr>
+<th scope="row">Mean position RMSE, five completed missions</th>
+<td>8.80 cm</td>
+<td>8.76 cm</td>
+</tr>
+<tr>
+<th scope="row">Camera-confirmed docks, six attempts</th>
+<td>5/6</td>
+<td>5/6</td>
+</tr>
+</tbody>
+</table></div>
+<p>For each run, we took the square root of the EKF heading variance at Goal 2, converted it to degrees, then calculated the RMS across seeds 37, 38, 39, 40 and 42.</p>
+<p>We selected wheel-travel Q because its predicted heading uncertainty was closer to the observed error across these trials. Position RMSE differed by only 0.04 cm, and both models docked on the same five seeds. The evidence supports a better estimate of wheel-driven uncertainty, with little change in average localisation accuracy.</p>
+<aside class="note">Seed 41 is retained as an incomplete mission in the success denominator. Its original terminal logs supplied no numerical trajectory; the later instrumented rerun is analysed separately under <a href="#limitations">failure diagnosis</a>.</aside><h3>Tuning evidence: measured camera uncertainty and R</h3>
+<p>The camera accuracy scripts compared image-derived range, bearing and world heading with simulator truth at different static positions and viewing angles. The test and validation sets used separate viewpoints. Measurements passed the same front-facing and 2-pixel reprojection checks as the mission, followed by the measured-range limit of 3 m. There were 37 usable test samples and 23 usable validation samples within that limit. Error covariance was calculated in metres and radians. Mean error was recorded separately to expose systematic offsets.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Static camera error spread and tested tuning values"><table>
+<caption>Static camera error spread and tested tuning values</caption>
+<thead><tr>
+<th scope="col">Quantity</th>
+<th scope="col">Test SD</th>
+<th scope="col">Validation SD</th>
+<th scope="col">Original R SD</th>
+<th scope="col">Candidate R SD</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Range</th>
+<td>0.856 mm</td>
+<td>0.291 mm</td>
+<td>20 mm</td>
+<td>5 mm</td>
+</tr>
+<tr>
+<th scope="row">Bearing</th>
+<td>0.00293°</td>
+<td>0.00240°</td>
+<td>0.5°</td>
+<td>0.05°</td>
+</tr>
+<tr>
+<th scope="row">World heading</th>
+<td>0.229°</td>
+<td>0.083°</td>
+<td>5°</td>
+<td>1°</td>
+</tr>
+</tbody>
+</table></div>
+<p>The mean bearing error was −0.01255° in the test set and −0.01181° in validation. Its repeatability indicates a small systematic offset. The measured covariance describes variation across static viewpoints and excludes that mean bias. The validation samples within the range gate were concentrated around 1.86 m and 0.86 m, leaving the approximately 0.57 m docking distance untested by that set. Motion, pitch and roll, and repeated correlated camera observations can also differ from this static test.</p>
+<p>We therefore tested a diagonal R with standard deviations of 5 mm, 0.05° and 1°. These were rounded tuning choices with margins above the static errors. Both the original and candidate R omit correlations between measurements derived from the same marker corners. Lower R increases camera influence and also tightens the innovation gate. The mission rejects updates when the normalised innovation squared exceeds 25; this threshold was held fixed.</p>
+<details><summary>Paired mission comparison of the two R settings</summary><div class="detail-body">
+<p>Both R settings were evaluated using wheel-travel Q, encoder noise k = 0.005 m/√m, normal traction and the same camera and LQR configuration. The paired seeds were 37–42. Seed 41 stalled before camera corrections under both settings, as described above. The table reports position RMSE for the five completed pairs. Each value summarises that run’s actual trajectory; different corrections can change subsequent steering and observations.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Position RMSE for five completed pairs"><table>
+<caption>Position RMSE for five completed pairs</caption>
+<thead><tr>
+<th scope="col">Seed</th>
+<th scope="col">Original R, cm</th>
+<th scope="col">Candidate R, cm</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">37</th>
+<td>8.59</td>
+<td>8.08</td>
+</tr>
+<tr>
+<th scope="row">38</th>
+<td>3.99</td>
+<td>4.63</td>
+</tr>
+<tr>
+<th scope="row">39</th>
+<td>15.48</td>
+<td>15.43</td>
+</tr>
+<tr>
+<th scope="row">40</th>
+<td>10.01</td>
+<td>10.10</td>
+</tr>
+<tr>
+<th scope="row">42</th>
+<td>5.73</td>
+<td>5.90</td>
+</tr>
+<tr>
+<th scope="row">Mean</th>
+<td>8.76</td>
+<td>8.83</td>
+</tr>
+</tbody>
+</table></div>
+<p>Both settings completed five of the six attempted seeds with camera-confirmed docking. All recorded in-range camera corrections were accepted in the five candidate-R runs. The candidate improved seed 37, reducing actual Goal 3 distance from 10.55 cm to 5.63 cm, but seed 38 worsened from 3.46 cm to 8.32 cm. Bay distances are reported as accuracy measurements. Arrival is declared using a 3 cm estimated-position threshold, and actual bay error has no pass/fail cutoff.</p>
+</div></details><p>The selected configuration combines wheel-travel Q with the original camera R. Wheel-travel Q gave a predicted heading spread closer to the observed errors before camera correction. The original R produced slightly lower mean position RMSE across the five completed pairs. The 0.07 cm difference is small and does not establish statistical superiority; the candidate provided no consistent improvement sufficient to justify replacing the original setting.</p>
+<p>Wheel-travel Q gave uncertainty-to-observed-error ratios of approximately 1.10 at Goal 2, compared with 0.54 for time-based Q. This is a checkpoint heading-spread comparison, not a full-state NEES consistency test. The original R had a mean position RMSE only 0.07 cm below the candidate; the difference is too small to establish statistical superiority. The candidate did not offer a consistent benefit.</p></section>
+<!-- CONTROL --><section class="report-section" id="control" aria-labelledby="control-title"><div class="section-heading">
+<span class="section-no">05</span><div>
+<h2 id="control-title">Planning, LQR &amp; docking</h2>
+<p class="section-lead">LiDAR determines a feasible route; estimated-state feedback commands the wheels.</p>
+</div>
+</div>
+<p>The path planner builds a grid from LiDAR measurements transformed using the EKF pose. It plans towards each predefined goal with room for the robot footprint; it does not receive a prefilled obstacle map. The navigator aligns to each straight segment, tracks it with LQR and can stop on live scan clearance. After the bays and charger approach, it changes to a separate low-speed visual docking controller.</p>
+<h3>LQR steering</h3>
+<p>The controller minimises the infinite-horizon discrete cost J = Σ(eᵀQ_LQR e + ω²R_LQR). Q_LQR = diag(1/0.10², 1/(15π/180)²) = diag(100, 14.5903), and R_LQR = 1/0.5² = 4. These weights normalise 10 cm lateral error, 15° heading error and 0.5 rad/s yaw-rate effort. They are engineering tuning scales, not hard tolerances or a proven optimum for all missions. The EKF covariance Q and R are separate quantities from these controller weights.</p>
+<div class="equation" tabindex="0">J = Σ(eᵀ Q<sub>LQR</sub> e + ω² R<sub>LQR</sub>)<br>Q<sub>LQR</sub> = diag(100, 14.5903),   R<sub>LQR</sub> = 4<br>ω = −K<sub>L</sub> e</div>
+<details><summary>Riccati equation and gain calculation</summary><div class="detail-body"><p>The discrete algebraic Riccati equation is S_L = Q_LQR + AᵀS_LA − AᵀS_LB(R_LQR + BᵀS_LB)⁻¹BᵀS_LA. The implementation iterates to a maximum element change below 10⁻¹⁰, with a 20,000-iteration limit. It forms K_L = (R_LQR + BᵀS_LB)⁻¹BᵀS_LA and commands ω = −K_L e. Both errors are calculated from the EKF pose.</p></div></details><div class="table-wrap" tabindex="0" role="region" aria-label="Scheduled LQR gains"><table>
+<caption>Scheduled LQR gains</caption>
+<thead><tr>
+<th scope="col">Speed, m/s</th>
+<th scope="col">Kᵧ, rad/(m·s)</th>
+<th scope="col">Kθ, s⁻¹</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">0.025</th>
+<td>4.7593</td>
+<td>1.8822</td>
+</tr>
+<tr>
+<th scope="row">0.050</th>
+<td>4.7519</td>
+<td>1.9416</td>
+</tr>
+<tr>
+<th scope="row">0.075</th>
+<td>4.7447</td>
+<td>1.9991</td>
+</tr>
+<tr>
+<th scope="row">0.100</th>
+<td>4.7377</td>
+<td>2.0549</td>
+</tr>
+<tr>
+<th scope="row">0.130</th>
+<td>4.7296</td>
+<td>2.1198</td>
+</tr>
+<tr>
+<th scope="row">0.160</th>
+<td>4.7218</td>
+<td>2.1826</td>
+</tr>
+</tbody>
+</table></div>
+<p>The nearest speed selects the gain; gains are not interpolated. The nominal eigenvalues of A − BK lie within the unit circle at each design speed. This applies to the local, unsaturated model; the recovery tests below check the simulated response.</p>
+<h3>Segment tracking and wheel actuation</h3>
+<p>Forward speed is clip(0.6 × remaining along-segment distance, 0.025, 0.16) m/s. TRACK limits yaw rate to ±0.70 rad/s. ALIGN holds v = 0 and applies ω = clip(−1.5e_θ, −0.70, 0.70) until |e_θ| ≤ 4°. A tracking heading error above 50° returns to ALIGN. Intermediate segment endpoints use 2 cm estimated distance; delivery bays use 3 cm. An along-track overshoot greater than 6 cm stops tracking and requests replanning. These thresholds are controller logic, not measurements of true arrival accuracy.</p>
+<p>Body commands are converted to wheel rates: ω_L = (v − bω/2)/r and ω_R = (v + bω/2)/r, with r = 0.033 m. If either target exceeds 5.5 rad/s, both are scaled by the same factor, preserving their ratio. A PI trim around the MuJoCo velocity actuators uses encoder-rate error, proportional gain 0.5 and integral gain 2 s⁻¹. The integral contribution is bounded to ±3 rad/s with conditional anti-windup; final actuator velocity commands are clipped to ±7.88 rad/s. Stop commands reset the integral.</p>
+<p>The simulation physics step is 0.002 s, navigation control period is 0.05 s and camera observation period is 0.5 s. The wheel servo uses measured wheel rates; the deliberately added noise affects localisation increments, rather than the inner servo feedback. Simulator position and heading do not feed the path tracker, planner transforms or docking controller. Simulator geometry is used to generate sensor readings and to evaluate results.</p>
+<h3>Camera-confirmed stand-off docking</h3>
+<p>The final target is (−8.197, 0, π), 0.50 m from the marker plane measured from the base. This is a stand-off target, not physical charger contact. Success is declared using sensed and estimated poses. The final true-pose errors are reported separately to check the 3 cm and 3° evaluation objective.</p>
+<p>For target displacement δ = p_d − p̂, define d = ‖δ‖, α = wrap(atan2(δ_y, δ_x) − θ̂) and β = wrap(θ_d − θ̂ − α). Docking commands v = min(0.06, 0.5d) m/s when |α| &lt; 35°, otherwise v = 0; ω = clip(1.4α − 0.5β, −0.30, 0.30) rad/s. Within 2 cm estimated distance, translation stops and heading verification uses ω = clip(−1.5 wrap(θ̂ − θ_d), −0.25, 0.25).</p>
+<p>Accepted camera observations must be no more than 1.2 s old; otherwise WAIT CAMERA commands zero motion. Confirmation requires the independently reconstructed visual base pose to be within 5 cm and 3° of the target and the fused pose within 3 cm and 3°. Three consecutive qualifying observations are required. A failed observation/qualification or stale-camera condition resets the count. The dock phase has a 60 s timeout; successful docking is followed by a two-second hold before results are finalised.</p>
+<aside class="note"><strong>Three different thresholds serve different purposes.</strong> The visual pose must be within 5 cm and 3°; the fused pose must be within 3 cm and 3°. Final simulator-truth errors are checked against the separate evaluation target of 3 cm and 3°. No physical charging contact is claimed.</aside></section>
+<!-- VALIDATION --><section class="report-section" id="validation" aria-labelledby="validation-title"><div class="section-heading">
+<span class="section-no">06</span><div>
+<h2 id="validation-title">Controller verification</h2>
+<p class="section-lead">Separate actuator, tracking and recovery tests explain what the controller can achieve.</p>
+</div>
+</div>
+<h3>Inner wheel-response verification</h3>
+<p>The wheel-response tests checked whether the simulated robot achieved the speeds requested by the controller. The current WheelServo was used with its existing proportional gain of 0.5, integral gain of 2 s⁻¹ and actuator-command limit of ±7.88 rad/s. Each of seven cases reset to the declared XML starting pose, settled for one second, drove for 2.5 or 3 seconds, and then commanded a stop for two seconds. The slip plate had normal floor traction.</p>
+<p>The servo receives ideal wheel-encoder rates in the mission, so this separate inner-loop test used the same measurements. It did not run the EKF or LQR. Encoder noise remained enabled in the full-mission test. Simulator position and heading were used only to score actual motion. All seven wheel-response cases completed.</p>
+<p>Actual speeds in the table are averages over the final second of each driving phase. The response time is the first sampled time at which both wheel rates entered ±5% of their respective nonzero targets and remained inside that band for the rest of the driving phase. This is a response metric, not a project success threshold.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Steady response over the final second of driving"><table>
+<caption>Steady response over the final second of driving</caption>
+<thead><tr>
+<th scope="col">Case</th>
+<th scope="col">Requested v, m/s</th>
+<th scope="col">Actual v, m/s</th>
+<th scope="col">Requested ω, rad/s</th>
+<th scope="col">Actual ω, rad/s</th>
+<th scope="col">5% response, s</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Slow straight</th>
+<td>0.025</td>
+<td>0.02435</td>
+<td>0</td>
+<td>0.00001</td>
+<td>2.04</td>
+</tr>
+<tr>
+<th scope="row">Medium straight</th>
+<td>0.100</td>
+<td>0.09937</td>
+<td>0</td>
+<td>−0.00010</td>
+<td>0.85</td>
+</tr>
+<tr>
+<th scope="row">Cruise straight</th>
+<td>0.160</td>
+<td>0.15939</td>
+<td>0</td>
+<td>−0.00012</td>
+<td>0.30</td>
+</tr>
+<tr>
+<th scope="row">Left rotation</th>
+<td>0</td>
+<td>−0.00025</td>
+<td>+0.500</td>
+<td>+0.49033</td>
+<td>1.26</td>
+</tr>
+<tr>
+<th scope="row">Right rotation</th>
+<td>0</td>
+<td>+0.00019</td>
+<td>−0.500</td>
+<td>−0.49065</td>
+<td>1.26</td>
+</tr>
+<tr>
+<th scope="row">Left curve</th>
+<td>0.100</td>
+<td>0.09928</td>
+<td>+0.300</td>
+<td>+0.29926</td>
+<td>1.31</td>
+</tr>
+<tr>
+<th scope="row">Right curve</th>
+<td>0.100</td>
+<td>0.09964</td>
+<td>−0.300</td>
+<td>−0.29884</td>
+<td>1.31</td>
+</tr>
+</tbody>
+</table></div>
+<p>The straight-speed shortfall was 2.59% at 0.025 m/s, 0.63% at 0.10 m/s and 0.38% at 0.16 m/s. Rotation-rate shortfall was approximately 1.9% in both directions. No actuator commands reached their limits in these tests, and sampled wheel rates approached their targets without exceeding them. After 0.5 seconds of stopping, the largest recorded absolute wheel rate was approximately 0.00027 rad/s.</p>
+<p>These results support retaining the existing servo and wheel geometry for the next controller tests. They do not establish calibration over all loads or floor conditions. Low-speed response took about two seconds, so the tracker’s assumption that requested motion is achieved immediately is only an approximation. This delay should be considered when assessing short segments and transitions.</p>
+<h3>Noisy full-mission tracking baseline</h3>
+<p>The baseline used wheel-travel Q, the original camera standard deviations of 0.02 m, 0.5° and 5°, encoder-noise coefficient 0.005 m/√m, seed 37 and normal floor traction. LQR weights, scheduled gains, speed limits and planning logic were unchanged. The trajectory, goal and camera-correction CSV data matched the preceding seed 37 run exactly, confirming that the diagnostic additions did not change this run’s motion.</p>
+<p>The table covers 2,834 active TRACK samples without a stop override. Cross-track error is the perpendicular distance from the active straight segment; heading error is relative to its direction. Estimated and actual errors use the same reference. Alignment, planning and docking are excluded.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Active TRACK samples only — 2,834 samples"><table>
+<caption>Active TRACK samples only — 2,834 samples</caption>
+<thead><tr>
+<th scope="col">Tracking measure</th>
+<th scope="col">Estimated pose</th>
+<th scope="col">Actual pose</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Cross-track RMS</th>
+<td>0.25 cm</td>
+<td>6.54 cm</td>
+</tr>
+<tr>
+<th scope="row">Maximum absolute cross-track error</th>
+<td>1.09 cm</td>
+<td>18.25 cm</td>
+</tr>
+<tr>
+<th scope="row">Heading RMS</th>
+<td>0.72°</td>
+<td>2.68°</td>
+</tr>
+<tr>
+<th scope="row">Maximum absolute heading error</th>
+<td>3.98°</td>
+<td>8.81°</td>
+</tr>
+</tbody>
+</table></div>
+<p>The controller followed its perceived route closely. The larger actual error is consistent with accumulated localisation error: stronger gains cannot directly correct an error the estimator does not report. The reference route was also generated using the estimated pose, so it is not an independent ideal path.</p>
+<p>No LQR steering request reached ±0.70 rad/s. Wheel targets were scaled to their 5.5 rad/s limit in seven samples. Actuator commands reached ±7.88 rad/s in 29 of 3,722 control samples, all immediately after ALIGN changed to TRACK. This rotation-to-forward transition warrants investigation, but brief limiting alone does not demonstrate instability. No overshoot-replanning event was recorded.</p>
+<details><summary>Bay and dock errors in this earlier verification run</summary><div class="detail-body">
+<div class="table-wrap" tabindex="0" role="region" aria-label="At first declared arrival"><table>
+<caption>At first declared arrival</caption>
+<thead><tr>
+<th scope="col">Arrival</th>
+<th scope="col">Estimated distance, cm</th>
+<th scope="col">Actual distance, cm</th>
+<th scope="col">Localisation error, cm</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Goal 1</th>
+<td>2.89</td>
+<td>4.47</td>
+<td>1.70</td>
+</tr>
+<tr>
+<th scope="row">Goal 2</th>
+<td>2.89</td>
+<td>12.65</td>
+<td>11.36</td>
+</tr>
+<tr>
+<th scope="row">Goal 3</th>
+<td>2.97</td>
+<td>10.55</td>
+<td>9.89</td>
+</tr>
+<tr>
+<th scope="row">Charger approach</th>
+<td>2.92</td>
+<td>2.33</td>
+<td>0.64</td>
+</tr>
+<tr>
+<th scope="row">Stand-off dock</th>
+<td>1.90</td>
+<td>1.80</td>
+<td>0.16</td>
+</tr>
+</tbody>
+</table></div>
+<p>All three bay arrivals were declared using the 3 cm estimated-position threshold, followed by camera-confirmed stand-off docking. Actual bay distances remain accuracy measures without a pass/fail cutoff. Whole- mission localisation RMSE was 8.59 cm, which measures estimated-versus-actual position and is distinct from cross-track RMS. No collision-contact count was logged, so completion does not by itself verify the zero- contact objective.</p>
+</div></details><h3>Fixed-route recovery tests under encoder noise</h3>
+<p>The earlier 5 cm sideways-recovery example in the state-space section is retained as a separate test with noise disabled. These tests extend that evidence using encoder noise and the current estimator and controller settings. Gains and wheel-servo settings were fixed while recovery, alignment and corner behaviour were measured.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Seven cases repeated with seeds 37, 39 and 42"><table>
+<caption>Seven cases repeated with seeds 37, 39 and 42</caption>
+<thead><tr>
+<th scope="col">Case family</th>
+<th scope="col">Initial condition</th>
+<th scope="col">Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">On-path reference</th>
+<td>Zero lateral and heading offset</td>
+<td>Fixed straight-segment reference</td>
+</tr>
+<tr>
+<th scope="row">Sideways recovery</th>
+<td>±5 cm; parallel heading</td>
+<td>Recovery in both lateral directions</td>
+</tr>
+<tr>
+<th scope="row">Heading recovery</th>
+<td>On line; ±10°</td>
+<td>Small-angle recovery starting in TRACK</td>
+</tr>
+<tr>
+<th scope="row">Alignment transition</th>
+<td>On line; +30°</td>
+<td>ALIGN followed by forward TRACK</td>
+</tr>
+<tr>
+<th scope="row">Corner</th>
+<td>Two segments at 90°</td>
+<td>Handover, alignment and tracking</td>
+</tr>
+</tbody>
+</table></div>
+<p>Each case uses a declared test starting pose to place the simulated robot and initialise the estimator. This represents a known physical offset from the path, not a deliberately wrong pose estimate. The initial estimate is never copied from simulator truth. The test fixture is reset before each trial; no pose resets occur during a trial. All feedback uses the estimated state. Simulator truth is used only for scoring.</p>
+<p>The supplied test script uses fixed reference segments in the open corridor, bypassing route planning so that replanning cannot hide tracking error. LiDAR stopping remains active, and camera measurements retain the mission’s detection, range and innovation gates. These short routes are expected to lie outside the 3 m camera correction range; the script records the actual accepted-update count rather than assuming it is zero.</p>
+<p>The seven cases were run with seeds 37, 39 and 42. Estimated and actual tracking RMS, endpoint error, recovery time, alignment duration and command limiting were compared. A diagnostic recovery band of ±1 cm cross-track and ±2° heading sustained for one second is recorded separately from endpoint arrival. It is not a new mission pass/fail requirement. The corner is assessed by segment and transition.</p>
+<p>Every trial reached its estimated endpoint. No LiDAR-stop or segment-overshoot status was recorded, and no LQR steering request reached its angular-rate limit. Configuration files and source hashes matched across the three seeds apart from the seed value. Encoder noise, wheel-travel Q and the original camera R remained enabled as specified. No camera correction was accepted in any trial, so localisation relied on wheel prediction throughout.</p>
+<figure class=""><a class="figure-link" href="static/images/recovery-traces.jpg" target="_blank" rel="noopener" aria-label="Open full-size figure: Six sideways-offset recovery plots for seeds 37, 39 and 42, showing actual and estimated cross-track errors."><img src="static/images/recovery-traces.jpg" alt="Six sideways-offset recovery plots for seeds 37, 39 and 42, showing actual and estimated cross-track errors." loading="lazy" decoding="async" width="2072" height="1196"></a><figcaption>Figure 4. Solid lines: actual error. Dashed lines: estimated error. The shaded band is ±1 cm sideways error; the recovery measure also requires ±2° heading for one second. Traces end at the final active tracking sample. <span class="figure-hint">Open image to enlarge ↗</span></figcaption></figure><p>The table reports first entry into the joint ±1 cm cross-track and ±2° heading band, sustained for one second of active tracking. Times are measured from the beginning of each case. A dash means this interval was not observed. Entering the band once does not establish that the robot remained there until arrival. Endpoint distances are actual distances at estimated arrival; they have no pass/fail cutoff.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Recovery under fixed estimator and controller settings"><table>
+<caption>Recovery under fixed estimator and controller settings</caption>
+<thead><tr>
+<th scope="col">Case</th>
+<th scope="col">Actual band entry, s (seeds 37 / 39 / 42)</th>
+<th scope="col">Actual endpoint range, cm</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">On-path reference</th>
+<td>0.00 / 0.00 / 0.00</td>
+<td>1.64–2.82</td>
+</tr>
+<tr>
+<th scope="row">Sideways +5 cm</th>
+<td>5.79 / — / 4.96</td>
+<td>1.69–2.67</td>
+</tr>
+<tr>
+<th scope="row">Sideways −5 cm</th>
+<td>— / — / 6.26</td>
+<td>1.76–2.93</td>
+</tr>
+<tr>
+<th scope="row">Heading +10°</th>
+<td>0.75 / 0.75 / 0.75</td>
+<td>1.66–2.53</td>
+</tr>
+<tr>
+<th scope="row">Heading −10°</th>
+<td>0.75 / — / 0.75</td>
+<td>1.71–3.00</td>
+</tr>
+<tr>
+<th scope="row">Alignment +30°</th>
+<td>1.99 / 1.94 / 1.94</td>
+<td>1.51–2.13</td>
+</tr>
+<tr>
+<th scope="row">Corner, second segment</th>
+<td>12.28 / 12.13 / 12.23</td>
+<td>0.85–1.56</td>
+</tr>
+</tbody>
+</table></div>
+<p>Sideways recovery: the estimate entered the joint band in all six trials, after 4.49 - 5.22 s. Actual motion met the same sustained band in three of six trials. The initial 5 cm actual offset reduced to 0.01 - 2.25 cm in absolute value at the final active tracking sample. The two measures therefore show useful correction with residual drift, rather than guaranteed centimetre-level accuracy.</p>
+<p>Heading recovery: all six estimates entered the band, while actual motion did so in five of six trials. The final active-tracking heading error was within 0.89° in every heading-offset case. Seed 39 with a -10° initial offset did not sustain the joint band because lateral error remained too large. Both angular and lateral response must be checked.</p>
+<p>Alignment and corner: the +30° cases entered TRACK at 1.68 - 1.73 s. Corner realignment lasted 3.10 - 3.15 s between the segment handover and resumed tracking. All three second corner segments entered the actual joint band, 0.20 - 0.25 s after tracking resumed. Their actual cross-track RMS was 0.27 - 0.62 cm. The endpoint-distance range across all 21 trials was 0.85 - 3.00 cm.</p>
+<details><summary>Recovery interpretation and transition limiting</summary><div class="detail-body">
+<p>The estimated cross-track error reduced towards zero in both directions. Actual curves depended more strongly on seed: seed 39 developed a similar negative offset even in the on-path reference, which ended active tracking at -2.01 cm. This supports wheel-only localisation drift as a contributor to the residual errors. It does not prove that all physical tracking error is caused by estimation, and the band-entry times must not be interpreted as permanent settling times.</p>
+<p>The forward-speed request jumped from zero to 0.16 m/s when ALIGN changed to TRACK. Each alignment and corner trial hit the ±7.88 rad/s actuator-command limit for two consecutive samples immediately after this change, approximately 0.10 s. All continued tracking and reached their estimated endpoints. Brief saturation is a measured transition effect, not evidence by itself that the controller is unstable.</p>
+<p>The current controller demonstrated recovery and corner handling under the tested conditions. Retain the present gains as the verified baseline. A forward-speed ramp can be evaluated as an optional iteration to reduce transition saturation, using the same cases and seeds and checking that recovery and endpoint errors do not worsen. The tests do not resolve the seed 41 full-mission planner stall, because this fixture bypasses the planner, and no collision-contact count was recorded.</p>
+</div></details><aside class="note"><strong>21/21 estimated endpoints were reached.</strong> Actual sustained recovery occurred in 3/6 sideways trials and 5/6 heading trials. Endpoint completion and actual recovery-band performance are different measures.</aside></section>
+<!-- RESULTS --><section class="report-section" id="results" aria-labelledby="results-title"><div class="section-heading">
+<span class="section-no">07</span><div>
+<h2 id="results-title">Final simulation results</h2>
+<p class="section-lead">Normal operation, encoder noise, and encoder noise with a low-grip insert.</p>
+</div>
+</div>
+<p>A completed mission requires all three estimated bay arrivals followed by camera-confirmed stand-off docking. Bay arrival uses a 3 cm estimated-position threshold; actual bay distance is an accuracy measurement, not an additional pass/fail test. Localisation position RMSE measures estimated-versus-true planar position over logged control samples. Tracking RMS measures distance from the active reference segment and is a different quantity. Final dock errors below use the final pose report, whereas goal-arrival tables sample the first declared arrival. Simulator truth is used only for evaluation.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Final demo conditions — one run per condition, seed 37"><table>
+<caption>Final demo conditions — one run per condition, seed 37</caption>
+<thead><tr>
+<th scope="col">Mode</th>
+<th scope="col">Encoder noise</th>
+<th scope="col">Insert sliding friction</th>
+<th scope="col">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>Disabled</td>
+<td>1.0</td>
+<td>Normal operation; modelling and camera error remain</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>k = 0.005 m/√m</td>
+<td>1.0</td>
+<td>Added encoder noise</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>k = 0.005 m/√m</td>
+<td>0.04</td>
+<td>Encoder noise + physical slip disturbance</td>
+</tr>
+</tbody>
+</table></div>
+<p>All three cases used wheel-travel Q, the original camera R, the existing LQR and wheel servo. The target was (−8.197, 0, π), 0.50 m from the marker measured from the base. The physical insert was present in all cases.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Final demo performance"><table>
+<caption>Final demo performance</caption>
+<thead><tr>
+<th scope="col">Mode</th>
+<th scope="col">Duration, s</th>
+<th scope="col">Position RMSE, cm</th>
+<th scope="col">Heading RMSE, °</th>
+<th scope="col">Final dock XY, cm</th>
+<th scope="col">Final dock yaw, °</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>184.36</td>
+<td>1.06</td>
+<td>0.329</td>
+<td>1.90</td>
+<td>1.171</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>191.86</td>
+<td>8.53</td>
+<td>2.566</td>
+<td>1.88</td>
+<td>0.315</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>191.36</td>
+<td>8.45</td>
+<td>2.460</td>
+<td>1.99</td>
+<td>1.943</td>
+</tr>
+</tbody>
+</table></div>
+<p>Duration is the monitored mission interval, including the final confirmation/hold period and excluding initial settling. All three status files report ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK. All three final true dock poses satisfy the stated 3 cm and 3° evaluation objective. Zero obstacle contacts were recorded over 92,181, 95,931 and 95,681 physics samples respectively (283,793 total). Support surfaces and self-contact are excluded; this result is limited to these runs and their collision geometry.</p>
+<aside class="note"><strong>All three demos met the final docking target: within 3 cm and 3°.</strong> Zero obstacle contacts were recorded in these runs. One trial per condition does not establish a reliability rate across random seeds.</aside><h3>Actual bay accuracy</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Actual distance at first declared bay arrival"><table>
+<caption>Actual distance at first declared bay arrival</caption>
+<thead><tr>
+<th scope="col">Mode</th>
+<th scope="col">Goal 1, cm</th>
+<th scope="col">Goal 2, cm</th>
+<th scope="col">Goal 3, cm</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>3.35</td>
+<td>3.78</td>
+<td>3.82</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>4.47</td>
+<td>12.65</td>
+<td>10.55</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>4.47</td>
+<td>12.65</td>
+<td>10.58</td>
+</tr>
+</tbody>
+</table></div>
+<p>Added encoder noise increases position RMSE from 1.06 to 8.53 cm and raises Goal 2 distance from 3.78 to 12.65 cm. The estimated arrival remains near 3 cm, so the larger true error is primarily a localisation limitation rather than failure to approach the estimated goal. Camera corrections near the charger subsequently reduce the final localisation errors to 0.04, 0.08 and 0.66 cm. Accurate final docking therefore does not imply equally accurate delivery at every earlier bay.</p>
+<h3>Does camera fusion reduce position error?</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Same-run estimator comparison"><table>
+<caption>Same-run estimator comparison</caption>
+<thead><tr>
+<th scope="col">Mode</th>
+<th scope="col">Wheel-only RMSE, cm</th>
+<th scope="col">Fused RMSE, cm</th>
+<th scope="col">Position RMSE reduction</th>
+<th scope="col">Final localisation error, cm</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>2.03</td>
+<td>1.06</td>
+<td>47.8%</td>
+<td>0.04</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>19.07</td>
+<td>8.53</td>
+<td>55.2%</td>
+<td>0.08</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>17.72</td>
+<td>8.45</td>
+<td>52.3%</td>
+<td>0.66</td>
+</tr>
+</tbody>
+</table></div>
+<p>The wheel-only estimator is a shadow using the same noisy wheel increments on the EKF-controlled trajectory. It is not a separate odometry-controlled mission. Fusion improves position RMSE in all three cases. Heading RMSE changes from 0.320° to 0.329° in mode 1 and from 2.486° to 2.566° in mode 2, but improves from 3.374° to 2.460° in mode 3. Thus better position accuracy does not guarantee better whole-run heading accuracy. Of the accepted camera updates, 48/51, 45/54 and 45/54 immediately improved position; individual corrections can worsen error even when overall fusion is beneficial.</p>
+<h3>Was the slip disturbance physically exercised?</h3>
+<p>The slip disturbance was physically exercised: mode 3 recorded 15.54 s of tyre–plate contact at friction 0.04. Left/right accumulated absolute rolling-distance mismatches were 6.93/4.73 cm, or 4.31/3.21% of wheel travel, versus 0.39/0.38 cm and approximately 0.26/0.26% with noise and normal traction. Twenty-one camera updates were accepted during plate contact in each noisy run. Mode 3 position RMSE was slightly lower than mode 2 (8.45 versus 8.53 cm), despite greater rolling mismatch. This does not show that slip improves performance: camera correction timing, trajectory and error cancellation affect aggregate RMSE. The physical mismatch and larger final localisation error expose the disturbance more directly.</p>
+<h3>Success rates and their scope</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Experiments must be interpreted separately"><table>
+<caption>Experiments must be interpreted separately</caption>
+<thead><tr>
+<th scope="col">Experiment</th>
+<th scope="col">Observed completion</th>
+<th scope="col">Scope</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Earlier Q comparison</th>
+<td>5/6 per Q model (83.3%)</td>
+<td>Seeds 37–42; seed 41 incomplete in both</td>
+</tr>
+<tr>
+<th scope="row">Earlier R comparison</th>
+<td>5/6 per R setting (83.3%)</td>
+<td>Same seeds; overlaps the Q evidence</td>
+</tr>
+<tr>
+<th scope="row">Fixed-route recovery</th>
+<td>21/21 endpoints (100%)</td>
+<td>Seven cases × three seeds; bypasses planner</td>
+</tr>
+<tr>
+<th scope="row">Final demos</th>
+<td>3/3 missions (100% observed)</td>
+<td>One run per condition; seed 37</td>
+</tr>
+</tbody>
+</table></div>
+<p>Repeated trials establish sensitivity to random encoder errors, while the three demo conditions add physical traction variation. These experiments must not be pooled into one overall success rate: configurations, paths, endpoints and failure criteria differ. Completed-run averages exclude the incomplete seed 41 trajectory but its failure remains in the completion denominator. The demo video is complete as reported by the operator; the numerical assessment here is based on its saved run files.</p>
+<h3>Collision monitoring</h3>
+<p>The monitor checks contacts between robot geometry and external geometry after every physics step. Named floor sections and the slip plate are excluded as support surfaces, along with robot self-contact. A contact qualifies if its solver constraint is active or its signed geometry separation is zero or negative; positive-margin active contacts are therefore counted conservatively. A sustained sequence counts as one episode rather than one collision per physics step. The counter is evaluation only and does not alter navigation, control or estimation.</p>
+<details><summary>Earlier collision-monitor verification run</summary><div class="detail-body">
+<p>The instrumented seed 37 mission reached all three bays and completed camera-confirmed stand-off docking. Across 94,681 physics samples spanning 189.362 s, the monitor recorded zero obstacle-contact episodes, zero contact samples and zero sampled contact duration. This verifies the zero-obstacle-contact objective for this particular completed run under the simulated collision model.</p>
+<p>Monitoring starts after the initial settling period. The result does not establish collision-free operation for every seed or floor condition, and it cannot assign counts retrospectively to previous runs. The quantitative result above comes from the saved mission contact files.</p>
+</div></details></section>
+<!-- LIMITATIONS --><section class="report-section" id="limitations" aria-labelledby="limitations-title"><div class="section-heading">
+<span class="section-no">08</span><div>
+<h2 id="limitations-title">Failures, trade-offs &amp; limits</h2>
+<p class="section-lead">The system’s limitations are part of the evidence, not exceptions to hide.</p>
+</div>
+</div>
+<aside class="note"><strong>Demonstrated scope:</strong> the final configuration completed three demo conditions and docked within the stated tolerances. Earlier multi-seed tests exposed an unresolved planning failure. Accurate docking does not imply accurate delivery at every bay.</aside><h3>Seed 41: planner refusal after Goal 2</h3>
+<figure class="medium"><a class="figure-link" href="static/images/planner-diagnosis.jpg" target="_blank" rel="noopener" aria-label="Open full-size figure: Saved map showing an occupied cell inside the robot inflation radius at the stopped estimated pose."><img src="static/images/planner-diagnosis.jpg" alt="Saved map showing an occupied cell inside the robot inflation radius at the stopped estimated pose." loading="lazy" decoding="async" width="1502" height="1149"></a><figcaption>Figure 5. Seed 41 map at interruption. This is the final saved map, not a snapshot of the first failure. <span class="figure-hint">Open image to enlarge ↗</span></figcaption></figure><p>At 75.324 s, the remaining route became invalid and replanning returned NO FOOTPRINT CLEARANCE. The controller entered PLAN and commanded zero motion. In the final map the rounded start cell at (−4.96, −1.68) m is observed free, with log odds −4, but marked unsafe. An occupied cell at (−5.28, −1.52) m lies 0.35777 m away, within the 0.37657 m obstacle-inflation radius. No unknown cell lies within the corresponding 0.31 m unknown-space inflation radius. Occupied-cell inflation therefore explains the continuing planning refusal.</p>
+<p>The live scan reported approximately 0.130 m stationary clearance. The scan and accumulated world-frame grid use different geometry and discretisation, so their decisions can differ. No camera correction had been accepted, and final localisation error was 11.56 cm. Pose drift and grid rounding are plausible contributors, but the final map cannot identify which historical observation created the blocking cell. The immediate stop mechanism is established; its full mapping history remains unresolved.</p>
+<p>Position RMSE was 7.40 cm and heading RMSE 2.187° over this incomplete run. These values are not directly comparable with completed-course RMSE and are not added to the earlier paired complete-run averages. Seed 41 remains an incomplete mission. Its rerun preceded contact monitoring, so its collision count remains unmeasured.</p>
+<p>Occupied-cell inflation explains the continuing NO FOOTPRINT CLEARANCE response. The robot’s rounded start cell can be observed free and still be unsafe for its whole footprint. Reducing inflation could increase route availability while reducing clearance protection; that change has not been validated.</p>
+<h3>Near-dock detection loss and the fallback</h3>
+<p>The noisy/slip trial reached approximately 1.91 cm actual dock error and 1.52° heading error, but marker detections ceased and three consecutive confirmations were never obtained before the operator closed the run. A static reconstruction reproduced detection failure even with the entire marker visible. An independent threshold-window fallback detected it and passed the existing PnP and EKF gates; the exact internal OpenCV candidate-selection mechanism was not established. The subsequent mode 3 demo completed camera-confirmed docking at 1.99 cm and 1.94° final true error without relaxing the docking thresholds. This supplies end-to-end evidence after the sensing change for this case, not a general detector success rate.</p>
+<p>The earlier static detector sweep produced valid estimates at 97/105 poses (92.4%). Errors computed only over valid detections must be interpreted alongside that availability rate. A lower range RMSE does not compensate for complete measurement loss. The camera fallback addresses availability; retaining pose-quality checks and consecutive confirmations limits acceptance of unreliable observations. The earlier unsuccessful near-dock run remains a failed/interrupted trial rather than being retrospectively counted as successful.</p>
+<h3>Interruptions and temporary measurement loss</h3>
+<p>The instrumented seed 41 rerun stalled during Goal 3 planning. Ctrl+C ended the run at approximately 89.574 s with the outcome “Interrupted by user; partial results saved”. The output retained 1,755 trajectory samples, 1,755 controller samples, goal records, controller events and the LiDAR map. Goals 1 and 2 had been declared reached; Goal 3 and docking were not reached. This verifies handled program interruption and partial-result preservation while the robot was already stationary. It does not demonstrate restart/resume or emergency stopping from motion.</p>
+<p>A separate earlier EKF integration test disabled camera corrections from 3 to 5 s. Ten updates were skipped, wheel prediction continued and camera corrections resumed. That test used an earlier configuration without deliberately added encoder noise. It is evidence of temporary measurement-loss handling, distinct from the Ctrl+C test and from the natural periods without marker visibility in the noisy missions.</p>
+<p>Interruption tests address different mechanisms. The seed 41 Ctrl+C trial verified saving partial results while already stopped. The earlier two-second camera dropout verified continued prediction and reacquisition in an earlier noise configuration. Terminal pause/resume freezes simulation time and reset starts an independent trial with fresh state; neither demonstrates physical emergency braking or autonomous recovery from a planner stall. The latest demo adds successful operation under injected noise and physically measured slip, but final-configuration multi-seed repetitions would be needed to estimate condition-specific reliability.</p>
+<h3>What the trade-offs show</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Quantified findings and practical implications"><table>
+<caption>Quantified findings and practical implications</caption>
+<thead><tr>
+<th scope="col">Finding</th>
+<th scope="col">Evidence</th>
+<th scope="col">Interpretation</th>
+</tr></thead>
+<tbody>
+<tr>
+<th scope="row">Wheel-travel Q improves uncertainty representation</th>
+<td>Predicted heading spread 1.89° → 3.81°; observed 3.47°</td>
+<td>Better uncertainty estimate; only 0.04 cm change in mean position RMSE</td>
+</tr>
+<tr>
+<th scope="row">Smaller camera R is not consistently better</th>
+<td>Mean position RMSE 8.76 → 8.83 cm</td>
+<td>Static sensor precision does not directly determine best mission weighting</td>
+</tr>
+<tr>
+<th scope="row">Perceived path error can hide actual drift</th>
+<td>0.25 cm estimated vs 6.54 cm actual cross-track RMS</td>
+<td>Stronger gains cannot correct pose error absent from feedback</td>
+</tr>
+<tr>
+<th scope="row">ALIGN-to-TRACK transitions demand actuator effort</th>
+<td>29/3,722 baseline samples at limit; about 0.10 s in recovery transitions</td>
+<td>A speed ramp is a future test, not an established improvement</td>
+</tr>
+<tr>
+<th scope="row">Accurate docking does not guarantee accurate bays</th>
+<td>Noisy demo Goal 2: 12.65 cm; final dock: 1.88 cm</td>
+<td>Camera correction near the charger recovers local accuracy</td>
+</tr>
+</tbody>
+</table></div>
+<p>Final-configuration multi-seed repetitions are still needed to estimate reliability in each condition. An optional forward-speed ramp should be compared against the verified baseline using the same cases and seeds. No improved gain tuning, autonomous planner-stall recovery, or energy saving is claimed.</p></section>
+<!-- RESOURCES --><section class="report-section" id="resources" aria-labelledby="resources-title"><div class="section-heading">
+<span class="section-no">09</span><div>
+<h2 id="resources-title">Resources &amp; appendix</h2>
+<p class="section-lead">The source report, demonstration video and implementation repository.</p>
+</div>
+</div>
+<p>The report below is the supplied source document. The website reorganises its material, corrects formatting and removes repeated revision notes; reported experimental values are retained.</p>
+<div class="resource-links">
+<a class="resource-link" href="static/documents/project-report.pdf"><span>Source report</span><strong>Read the full PDF ↗</strong></a><a class="resource-link" href="https://github.com/fabian9991/SCMS_Individual_project_37" target="_blank" rel="noopener"><span>Project repository</span><strong>View code on GitHub ↗</strong></a><a class="resource-link" href="https://youtu.be/mWIeYK-iH-M" target="_blank" rel="noopener"><span>Final demonstration</span><strong>Watch on YouTube ↗</strong></a>
+</div>
+<h3>Experimental appendix</h3>
+<figure class=""><a class="figure-link" href="static/images/recovery-appendix.jpg" target="_blank" rel="noopener" aria-label="Open full-size figure: Original numerical recovery appendix with tracking, recovery-time and endpoint columns."><img src="static/images/recovery-appendix.jpg" alt="Original numerical recovery appendix with tracking, recovery-time and endpoint columns." loading="lazy" decoding="async" width="2072" height="748"></a><figcaption>Recovery data excerpt reproduced from the report. Open the full-size image to inspect the numerical columns. <span class="figure-hint">Open image to enlarge ↗</span></figcaption></figure><h3>Reproducibility notes</h3>
+<p>The physics step is 0.002 s, navigation control period 0.05 s and camera period 0.5 s. Final demos use seed 37; earlier Q/R comparisons use seeds 37–42 and fixed-route recovery uses seeds 37, 39 and 42. The selected estimator and controller parameters are listed above.</p></section></main>
+</div>
+<footer class="site-footer"><div>
+<strong>SCMS · Individual Project 37</strong><p>TurtleBot3 visual waypoint navigation · MuJoCo</p>
+</div>
+<p class="template-credit">Website adapted from the <a href="https://github.com/nerfies/nerfies.github.io" target="_blank" rel="noopener">Nerfies template</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Original experimental figures and data are from the supplied project report.</p>
+<a href="#top">Back to top ↑</a></footer>
 </body>
 </html>
