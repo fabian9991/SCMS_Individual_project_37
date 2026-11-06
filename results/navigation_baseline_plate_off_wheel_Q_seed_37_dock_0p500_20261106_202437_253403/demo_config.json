@@ -1,0 +1,19 @@
+{
+  "mode": 1,
+  "description": "No added encoder noise; normal-grip plate",
+  "seed": 37,
+  "encoder_noise_enabled": false,
+  "slip_plate_enabled": false,
+  "plate_friction": [
+    1.0,
+    0.005,
+    0.0001
+  ],
+  "dock_pose_m_m_rad": [
+    -8.197,
+    -6.123233995736766e-17,
+    3.141592653589793
+  ],
+  "pause_semantics": "Freeze physics, sensor updates and simulation timers",
+  "reset_semantics": "End/save trial; restore XML initial state; fresh estimator/map/controller"
+}

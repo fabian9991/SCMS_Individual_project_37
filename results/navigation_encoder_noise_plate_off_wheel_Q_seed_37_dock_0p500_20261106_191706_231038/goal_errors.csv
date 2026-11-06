@@ -1,0 +1,1 @@
+goal,time_s,target_x,target_y,estimated_distance_m,actual_distance_m,fused_position_error_m,fused_heading_error_deg,odom_position_error_m,odom_heading_error_deg,est_x,est_y,true_x,true_y

@@ -1,0 +1,8 @@
+{"event": "start", "wall_utc": "2026-11-06T08:44:37.874698+00:00", "simulation_time_s": 0.0, "mode": 3, "seed": 37, "description": "Encoder noise; low-grip slip plate"}
+{"event": "pause", "wall_utc": "2026-11-06T08:50:20.612793+00:00", "simulation_time_s": 153.46200000000943}
+{"event": "resume", "wall_utc": "2026-11-06T08:50:35.642951+00:00", "simulation_time_s": 153.46200000000943}
+{"event": "pause", "wall_utc": "2026-11-06T08:52:16.664795+00:00", "simulation_time_s": 207.03600000026523}
+{"event": "resume", "wall_utc": "2026-11-06T08:53:00.267874+00:00", "simulation_time_s": 207.03600000026523}
+{"event": "pause", "wall_utc": "2026-11-06T08:53:10.678333+00:00", "simulation_time_s": 212.0980000002894}
+{"event": "quit_requested", "wall_utc": "2026-11-06T08:55:01.408840+00:00", "simulation_time_s": 212.0980000002894}
+{"event": "finished", "wall_utc": "2026-11-06T08:55:01.685359+00:00", "simulation_time_s": 212.0980000002894, "outcome": "Closed by user; partial results saved"}

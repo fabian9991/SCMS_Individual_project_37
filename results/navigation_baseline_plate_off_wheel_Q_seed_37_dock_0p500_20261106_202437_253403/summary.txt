@@ -1,0 +1,62 @@
+ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK
+Encoder noise enabled=False; seed=37; coefficient=0.005
+GOAL ERRORS AT DECLARED ARRIVAL (cm; truth for evaluation only)
+Goal                  Estimated distance  Actual distance  Localisation error
+GOAL 1                               2.92             3.35                0.46
+GOAL 2                               2.97             3.78                0.97
+GOAL 3                               2.98             3.82                1.46
+Charger approach                     3.96             3.97                0.07
+Charger dock                         1.85             1.90                0.05
+Bay arrivals declared: 3/3 using a 3 cm estimated-position threshold.
+Actual distance and localisation error at each declared arrival are reported above for accuracy evaluation.
+
+SAME-RUN ESTIMATOR COMPARISON
+Estimator         Position RMSE(cm)  Max(cm)  Final(cm)  Heading RMSE(deg)
+Fused EKF                      1.06     2.35       0.04              0.329
+Odometry only                  2.03     3.46       3.31              0.320
+Accepted camera updates: 51; position improved: 48; worsened: 3; unchanged: 0
+Mean immediate position-error reduction: +0.064 cm (positive is improvement).
+Odometry shadow uses the same noisy increments and never controls movement.
+Goal rows are sampled at first declared arrival; final docking metrics may differ after settling.
+This comparison tests estimation on one trajectory, not an odometry-only controlled mission.
+Obstacle contacts are monitored at each physics step; see collision_summary.txt.
+Camera SD settings: range=0.02 m, bearing=0.5 deg, heading=5 deg.
+
+COLLISION MONITOR (evaluation only)
+NO OBSTACLE CONTACTS RECORDED
+Obstacle-contact episodes: 0
+Physics samples with obstacle contact: 0/92181
+Of these, touching/overlap samples (distance <= 0): 0
+Sampled obstacle-contact duration: 0.000000 s
+Monitored simulation interval: 184.362000 s
+Excluded support geoms: floor, floor_east, floor_south, floor_north, slip_plate
+Counts robot versus external geometry; self-contact and support contact are excluded.
+A contact is solver-active OR has distance <= 0. Active positive-margin contacts count conservatively.
+An episode is consecutive sampled contact with any obstacle, separated by at least one clear sample.
+Zero means no qualifying contact in this monitored interval and collision model; it is not a safety proof.
+Interrupted runs cover only their recorded interval. Initial settling before mission start is excluded.
+
+Slip plate enabled=False; test sliding friction=1.0
+Time with actual tyre-plate contact: 18.39 s
+Accepted camera updates during tyre-plate contact: 22
+Observed tyre-plate sliding friction: [1.0]
+Left: tyre-plate contact steps=9193, wheel travel=1.643 m, accumulated absolute rolling-distance mismatch=0.38 cm (0.23% of wheel travel).
+Right: tyre-plate contact steps=6650, wheel travel=1.449 m, accumulated absolute rolling-distance mismatch=0.43 cm (0.30% of wheel travel).
+
+FINAL POSE AND DOCKING REPORT
+Outcome: ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK
+All theta values below are degrees, wrapped to [-180, 180).
+ESTIMATED BASE: x=-8.1785 m, y=-0.0003 m, theta=+178.853 deg
+TRUE BASE (evaluation only): x=-8.1780 m, y=-0.0004 m, theta=+178.829 deg
+LOCALISATION (estimate - truth): dx=-0.04 cm, dy=+0.01 cm, dtheta=+0.025 deg, XY=0.04 cm
+DESIRED DOCK BASE: x=-8.1970 m, y=-0.0000 m, theta=-180.000 deg
+ESTIMATED DOCK ERROR (estimate - target): dx=+1.85 cm, dy=-0.03 cm, dtheta=-1.147 deg, XY=1.85 cm
+ACTUAL DOCK ERROR (truth - target): dx=+1.90 cm, dy=-0.04 cm, dtheta=-1.171 deg, XY=1.90 cm
+STATION GEOMETRY (evaluation only; world metres):
+  Charger centre XYZ=[-9.0, 0.0, 0.3]
+  Charger front XYZ=[-8.7, 0.0, 0.3]; marker front XYZ=[-8.697, 0.0, 0.3]
+  Face-aligned robot heading=-180.000 deg; actual heading error to station=-1.171 deg
+  Base-to-marker XY distance=0.5190 m
+  Base-to-charger front normal gap=0.5220 m (target 0.5030 m); lateral offset=-0.0004 m
+  Robot collision-surface to charger gap=0.4361 m
+  Centre/face distances are not body clearance. Surface gap uses simulated collision geometry.

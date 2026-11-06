@@ -1,0 +1,3 @@
+{"event": "start", "wall_utc": "2026-11-06T09:45:06.531676+00:00", "simulation_time_s": 0.0, "mode": 3, "seed": 37, "description": "Encoder noise; low-grip slip plate"}
+{"event": "finished", "wall_utc": "2026-11-06T09:51:26.192422+00:00", "simulation_time_s": 191.3620000001904, "outcome": "ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK"}
+{"event": "close_requested", "wall_utc": "2026-11-06T09:58:34.303508+00:00", "simulation_time_s": 191.3620000001904}

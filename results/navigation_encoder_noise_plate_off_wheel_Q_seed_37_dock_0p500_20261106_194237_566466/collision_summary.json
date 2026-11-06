@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "outcome": "Reset requested; partial results saved",
+  "collision_counter_sha256": "02e7602295e89db21fa863e70b68f43834814d54abe129e0d4b590068ae6bf3c",
+  "start_sim_time_s": 1.0000000000000007,
+  "last_sample_sim_time_s": 39.09000000000181,
+  "samples": 19045,
+  "episodes": 0,
+  "contact_steps": 0,
+  "touching_or_overlap_steps": 0,
+  "sampled_contact_time_s": 0.0,
+  "ignored_support_geoms": [
+    "floor",
+    "floor_east",
+    "floor_south",
+    "floor_north",
+    "slip_plate"
+  ],
+  "robot_geom_ids": [
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25
+  ],
+  "active_obstacle_geoms": [],
+  "policy": "robot/external; exclude named support geoms; efc_address>=0 OR dist<=0",
+  "objects": {}
+}

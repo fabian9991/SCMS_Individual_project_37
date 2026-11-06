@@ -1,0 +1,5 @@
+time_s,event,details_json
+0.0020000000000000018,plan_result,"{""goal_index"": 0, ""planner_status"": ""EXPLORE"", ""path"": [[-1.0483797454725675e-07, 1.3182162239247803e-13], [-1.4399999999999995, 0.0], [-1.7599999999999998, -0.3999999999999999]]}"
+0.0020000000000000018,route_accepted,"{""route_id"": 1, ""goal_index"": 0, ""path"": [[-1.0483797454725675e-07, 1.3182162239247803e-13], [-1.4399999999999995, 0.0], [-1.7599999999999998, -0.3999999999999999]]}"
+0.0020000000000000018,status_change,"{""previous"": null, ""current"": ""TRACK"", ""route_id"": 1, ""goal_index"": 0}"
+8.393999999999807,run_end,"{""outcome"": ""Interrupted by user; partial results saved""}"

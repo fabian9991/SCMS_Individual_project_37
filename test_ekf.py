@@ -165,6 +165,13 @@ class MarkerCamera:
         params.cornerRefinementMinAccuracy = 0.001
         self.detector = cv2.aruco.ArucoDetector(
             cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50), params)
+        # Independent pass: avoid interactions between threshold-window candidates.
+        # Keep the primary detector unchanged and use identical corner refinement.
+        params.adaptiveThreshWinSizeMin = 3
+        params.adaptiveThreshWinSizeMax = 3
+        self.close_detector = cv2.aruco.ArucoDetector(
+            cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50), params)
+        # CLOSE_MARKER_FALLBACK_V1
         h = MARKER_SIZE / 2
         self.object_points = np.array([[-h,h,0], [h,h,0], [h,-h,0], [-h,-h,0]], dtype=float)
         model.vis.global_.offwidth = WIDTH
@@ -177,7 +184,11 @@ class MarkerCamera:
         self.status = 'not detected'
         self.renderer.update_scene(data, camera='front_camera')
         rgb = self.renderer.render()
-        corners, ids, _ = self.detector.detectMarkers(cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY))
+        gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+        corners, ids, _ = self.detector.detectMarkers(gray)
+        if ids is None or not np.any(ids == 0):
+            corners, ids, _ = self.close_detector.detectMarkers(gray)
+        # Both passes use original-resolution pixels and the same PnP/quality gates.
         if ids is None:
             return None
         matches = np.flatnonzero(ids.flatten() == 0)

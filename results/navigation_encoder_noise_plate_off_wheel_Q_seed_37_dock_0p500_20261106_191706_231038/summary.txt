@@ -1,0 +1,61 @@
+Interrupted by user; partial results saved
+Encoder noise enabled=True; seed=37; coefficient=0.005
+GOAL ERRORS AT DECLARED ARRIVAL (cm; truth for evaluation only)
+Goal                  Estimated distance  Actual distance  Localisation error
+GOAL 1                 NOT REACHED
+GOAL 2                 NOT REACHED
+GOAL 3                 NOT REACHED
+Charger approach       NOT REACHED
+Charger dock           NOT REACHED
+Bay arrivals declared: 0/3 using a 3 cm estimated-position threshold.
+Actual distance and localisation error at each declared arrival are reported above for accuracy evaluation.
+
+SAME-RUN ESTIMATOR COMPARISON
+Estimator         Position RMSE(cm)  Max(cm)  Final(cm)  Heading RMSE(deg)
+Fused EKF                      0.76     1.26       1.26              0.627
+Odometry only                  0.76     1.26       1.26              0.627
+No accepted camera updates: this run cannot demonstrate camera benefit.
+Odometry shadow uses the same noisy increments and never controls movement.
+Goal rows are sampled at first declared arrival; final docking metrics may differ after settling.
+This comparison tests estimation on one trajectory, not an odometry-only controlled mission.
+Obstacle contacts are monitored at each physics step; see collision_summary.txt.
+Camera SD settings: range=0.02 m, bearing=0.5 deg, heading=5 deg.
+
+COLLISION MONITOR (evaluation only)
+NO OBSTACLE CONTACTS RECORDED
+Obstacle-contact episodes: 0
+Physics samples with obstacle contact: 0/4197
+Of these, touching/overlap samples (distance <= 0): 0
+Sampled obstacle-contact duration: 0.000000 s
+Monitored simulation interval: 8.394000 s
+Excluded support geoms: floor, floor_east, floor_south, floor_north, slip_plate
+Counts robot versus external geometry; self-contact and support contact are excluded.
+A contact is solver-active OR has distance <= 0. Active positive-margin contacts count conservatively.
+An episode is consecutive sampled contact with any obstacle, separated by at least one clear sample.
+Zero means no qualifying contact in this monitored interval and collision model; it is not a safety proof.
+Interrupted runs cover only their recorded interval. Initial settling before mission start is excluded.
+
+Slip plate enabled=False; test sliding friction=1.0
+Time with actual tyre-plate contact: 0.00 s
+Accepted camera updates during tyre-plate contact: 0
+Observed tyre-plate sliding friction: []
+Left: tyre-plate contact steps=0, wheel travel=0.000 m, accumulated absolute rolling-distance mismatch=0.00 cm (insufficient wheel travel).
+Right: tyre-plate contact steps=0, wheel travel=0.000 m, accumulated absolute rolling-distance mismatch=0.00 cm (insufficient wheel travel).
+
+FINAL POSE AND DOCKING REPORT
+Outcome: Interrupted by user; partial results saved
+All theta values below are degrees, wrapped to [-180, 180).
+ESTIMATED BASE: x=-1.2852 m, y=+0.0008 m, theta=+179.988 deg
+TRUE BASE (evaluation only): x=-1.2915 m, y=+0.0117 m, theta=-179.902 deg
+LOCALISATION (estimate - truth): dx=+0.63 cm, dy=-1.09 cm, dtheta=-0.110 deg, XY=1.26 cm
+DESIRED DOCK BASE: x=-8.1970 m, y=-0.0000 m, theta=-180.000 deg
+ESTIMATED DOCK ERROR (estimate - target): dx=+691.18 cm, dy=+0.08 cm, dtheta=-0.012 deg, XY=691.18 cm
+ACTUAL DOCK ERROR (truth - target): dx=+690.55 cm, dy=+1.17 cm, dtheta=+0.098 deg, XY=690.55 cm
+STATION GEOMETRY (evaluation only; world metres):
+  Charger centre XYZ=[-9.0, 0.0, 0.3]
+  Charger front XYZ=[-8.7, 0.0, 0.3]; marker front XYZ=[-8.697, 0.0, 0.3]
+  Face-aligned robot heading=-180.000 deg; actual heading error to station=+0.098 deg
+  Base-to-marker XY distance=7.4055 m
+  Base-to-charger front normal gap=7.4085 m (target 0.5030 m); lateral offset=+0.0117 m
+  Robot collision-surface to charger gap=7.3229 m
+  Centre/face distances are not body clearance. Surface gap uses simulated collision geometry.

@@ -1,0 +1,3 @@
+{"event": "start", "wall_utc": "2026-11-06T09:24:37.695820+00:00", "simulation_time_s": 0.0, "mode": 1, "seed": 37, "description": "No added encoder noise; normal-grip plate"}
+{"event": "finished", "wall_utc": "2026-11-06T09:30:40.433326+00:00", "simulation_time_s": 184.36200000015697, "outcome": "ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK"}
+{"event": "reset_requested", "wall_utc": "2026-11-06T09:33:38.220605+00:00", "simulation_time_s": 184.36200000015697}

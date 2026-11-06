@@ -1,0 +1,57 @@
+{
+  "outcome": "ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK",
+  "estimated_pose_m_m_rad": [
+    -8.178438523801665,
+    0.0010955512937544157,
+    -3.1207837364564948
+  ],
+  "true_pose_m_m_rad": [
+    -8.178639814626539,
+    0.007682134930045911,
+    -3.1076763628892135
+  ],
+  "desired_dock_pose_m_m_rad": [
+    -8.197,
+    -6.123233995736766e-17,
+    3.141592653589793
+  ],
+  "localisation_error_m_m_rad": [
+    0.00020129082487407857,
+    -0.006586583636291495,
+    -0.01310737356728131
+  ],
+  "estimated_dock_error_m_m_rad": [
+    0.018561476198334148,
+    0.0010955512937544769,
+    0.02080891713329791
+  ],
+  "actual_dock_error_m_m_rad": [
+    0.01836018537346007,
+    0.007682134930045973,
+    0.033916290700579665
+  ],
+  "station": {
+    "station_facing_heading_rad": -3.141592653589793,
+    "actual_heading_error_to_station_deg": 1.9432603138820168,
+    "charger_center_world_m": [
+      -9.0,
+      0.0,
+      0.3
+    ],
+    "charger_front_world_m": [
+      -8.7,
+      0.0,
+      0.3
+    ],
+    "marker_front_world_m": [
+      -8.697000000000001,
+      0.0,
+      0.3
+    ],
+    "actual_base_to_marker_xy_m": 0.5184171071420128,
+    "actual_base_to_charger_front_normal_m": 0.5213601853734602,
+    "actual_base_lateral_to_charger_m": 0.007682134930045911,
+    "desired_base_to_charger_front_normal_m": 0.5030000000000001,
+    "robot_to_charger_collision_surface_distance_m": 0.4353275182612055
+  }
+}

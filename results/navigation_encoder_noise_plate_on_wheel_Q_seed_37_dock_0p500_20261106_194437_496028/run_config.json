@@ -1,0 +1,97 @@
+{
+  "encoder_noise_enabled": true,
+  "encoder_noise_seed": 37,
+  "encoder_noise_m_per_sqrt_m": 0.005,
+  "use_wheel_travel_Q": true,
+  "slip_plate_enabled": true,
+  "camera_R": [
+    [
+      0.0004,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      7.615435494667714e-05,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.007615435494667714
+    ]
+  ],
+  "camera_max_range_m": 3.0,
+  "camera_dt_s": 0.5,
+  "control_dt_s": 0.05,
+  "physics_dt_s": 0.002,
+  "wheel_radius_m": 0.033,
+  "wheel_separation_m": 0.288,
+  "cruise_v_m_s": 0.16,
+  "omega_max_rad_s": 0.7,
+  "gains": [
+    {
+      "v": 0.025,
+      "K": [
+        4.7592993018266965,
+        1.882230686551236
+      ]
+    },
+    {
+      "v": 0.05,
+      "K": [
+        4.751889073576124,
+        1.9415800472664957
+      ]
+    },
+    {
+      "v": 0.075,
+      "K": [
+        4.744710285981999,
+        1.9990757734463322
+      ]
+    },
+    {
+      "v": 0.1,
+      "K": [
+        4.737743438099933,
+        2.054874050370785
+      ]
+    },
+    {
+      "v": 0.13,
+      "K": [
+        4.729639328663188,
+        2.119780784411037
+      ]
+    },
+    {
+      "v": 0.16,
+      "K": [
+        4.721790946123803,
+        2.1826393726504127
+      ]
+    }
+  ],
+  "numpy_version": "2.5.4",
+  "mujoco_version": "3.17.0",
+  "demo_mode": 3,
+  "dock_standoff_m": 0.5,
+  "note": "Terminal lifecycle added; 0.50 m default stand-off; EKF/LQR/planner unchanged.",
+  "source_sha256": {
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\navigate_all_goals.py": "ff4dc94566b985ba9d318328baee2887d77d3e85e6d55e794f066fabf7be6e6e",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\test_ekf.py": "e78543abbf9f33430688bb2ec0efbb63011233205792cc237a6c6125a3754ca1",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\lidar_planner.py": "16f188871a68061f58ac02a89a28eb6af2032ea2fee3c83963041d31ca4423ea",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\lqr_diagnostics.py": "56c4b1fdecf5395fdf606d1f86d43a0255761ea4776027f830f8bd9e8d801e1a",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\navigation_demo.py": "f96c3f20f7079a62d53714b2cb7d7c6ebaaaaf83ddf8883ae5ba496b97e13423",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\navigation_view.py": "6d4ae8b051146f3f7e5b12f9a9fef37e3816cda6a210d5b1d145db601f37faf7",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\collision_counter.py": "02e7602295e89db21fa863e70b68f43834814d54abe129e0d4b590068ae6bf3c",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\physical_floor.xml": "c097fe23c3fd464c89603413c1a52f64d8487bdeb597fc57f359763a9d0dfd6f",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\scene_assignment.xml": "5f4c9a0d28b297e4bf39ef566c72e89b1f988fcd763747ab2691a76a2f965a3c",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\scene_assignment_plate.xml": "36a77030c39fad3166ae72744624150d16416b4e356b78b5c06e1cd411f979ca",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\scene_turtlebot3_burger.xml": "a9ffd4ce04009bba3f60246403cdc81195dd97ea6a4f4694fc908895c351942b",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\scene_turtlebot3_waffle_pi.xml": "d985661637fb1155c57721a1ab6936bd424ad9155859c73e1f3edc839c1fe4e0",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\turtlebot3_burger.xml": "ace08e8f6e40c7c03d0eb297d3f3222c4d581e887a9e375d8c59d529f7651774",
+    "C:\\Users\\johne\\Documents\\GitHub\\SCMS_Individual_project_37\\models\\robotis_tb3\\turtlebot3_waffle_pi.xml": "c4a770f1ee3628b19b6ffac2cbf542d127bc2790e7a4408070eca16d6d5eefbb"
+  }
+}

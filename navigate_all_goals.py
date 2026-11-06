@@ -1,10 +1,11 @@
 """Track A full-route preview: estimated-state LQR tracking with LiDAR stop.
 Place beside the supplied orientation-aware test_ekf.py. Its main() is NOT run.
 Run: python navigate_all_goals.py
-Routes are generated from LiDAR observations. No XML changes or teleportation.
+Routes use LiDAR observations. Demo reset restores the XML start between trials.
 All dynamics/controller parameters are provisional, documented below.
 """
 from pathlib import Path
+from contextlib import nullcontext
 import csv
 from datetime import datetime
 import time
@@ -30,8 +31,9 @@ START_P = np.diag([0.01**2, 0.01**2, np.deg2rad(1.)**2])
 GOALS = np.array([[-1.8,-1.2],[-4.8,-2.4],[-7.3,-2.4],[-7.8,0.]])
 GOAL_NAMES = ['GOAL 1','GOAL 2','GOAL 3','Charger approach']
 # Stand-off docking demonstration, not physical electrical contact.
-# Marker-to-base separation .647 m; camera-to-marker approximately .557 m.
-DOCK_POSE = np.array([-8.05, 0., np.pi])
+# Default marker-to-base separation .50 m; camera-to-marker about .41 m.
+DEFAULT_DOCK_STANDOFF = 0.50
+DOCK_POSE = np.array([MARKER_XY[0]+DEFAULT_DOCK_STANDOFF, MARKER_XY[1], np.pi])
 CAMERA_MAX_AGE = 1.2
 
 BAY_ESTIMATED_TOL = 0.03
@@ -433,20 +435,20 @@ from navigation_view import (ViewerTrails, StationEvaluation, pose_lines,
                              docking_progress, set_dock_standoff, save_final_report)
 # NAVIGATION_VIEW_VERSION_1
 
-def main(seed=None, dock_standoff=None, view_trails=True):
+# NAVIGATION_DEMO_VERSION_1
+
+def run_mission(seed=None, dock_standoff=DEFAULT_DOCK_STANDOFF, view_trails=True, session=None):
     global DOCK_POSE
+    dock_standoff = DEFAULT_DOCK_STANDOFF if dock_standoff is None else dock_standoff
     DOCK_POSE = set_dock_standoff(DOCK_POSE, MARKER_XY, dock_standoff)
     global ENCODER_NOISE_SEED
     if seed is not None:
         ENCODER_NOISE_SEED = int(seed)
     import mujoco
     import mujoco.viewer
-    scene = ROOT / 'models/robotis_tb3/scene_assignment_plate.xml'
-    if not scene.is_file():
-        from runpy import run_path
-        run_path(str(scene.with_name('install_physical_floor.py')))['install']()
-    model = mujoco.MjModel.from_xml_path(str(scene))
-    data = mujoco.MjData(model)
+    from navigation_demo import load_scene
+    import sys
+    model, data = load_scene(sys.modules[__name__]) if session is None else (session.model, session.data)
     def required(kind, name):
         i = mujoco.mj_name2id(model,kind,name)
         if i < 0:
@@ -455,15 +457,17 @@ def main(seed=None, dock_standoff=None, view_trails=True):
     base = required(mujoco.mjtObj.mjOBJ_BODY,'base')
     floor = required(mujoco.mjtObj.mjOBJ_GEOM,'floor')
     wheel_bodies = [required(mujoco.mjtObj.mjOBJ_BODY,n) for n in ('wheel_left','wheel_right')]
-    plate = SlipPlate(model,wheel_bodies,floor,required(mujoco.mjtObj.mjOBJ_GEOM,'slip_plate'))
+    with nullcontext() if session is None else session.viewer.lock():
+        plate = SlipPlate(model,wheel_bodies,floor,required(mujoco.mjtObj.mjOBJ_GEOM,'slip_plate'))
     site = required(mujoco.mjtObj.mjOBJ_SITE,'lidar_site')
     joints = [required(mujoco.mjtObj.mjOBJ_JOINT,n) for n in ['wheel_left','wheel_right']]
     addresses = model.jnt_qposadr[joints]
     motors = [required(mujoco.mjtObj.mjOBJ_ACTUATOR,n) for n in ['wheel_left','wheel_right']]
     # Retain original XML pose: no test_ekf.TEST_START or data.qpos placement.
-    for _ in range(round(1/model.opt.timestep)):
-        mujoco.mj_step(model,data)
-    mujoco.mj_forward(model,data)
+    if session is None:
+        for _ in range(round(1/model.opt.timestep)):
+            mujoco.mj_step(model,data)
+        mujoco.mj_forward(model,data)
     run_label = 'encoder_noise' if ENCODER_NOISE_ENABLED else 'baseline'
     run_label += '_plate_on' if SLIP_PLATE_ENABLED else '_plate_off'
     run_label += '_wheel_Q' if USE_WHEEL_TRAVEL_Q else '_time_Q'
@@ -499,7 +503,7 @@ def main(seed=None, dock_standoff=None, view_trails=True):
     docking = Docking()
     docking_started = None
     lidar = Lidar(model,base,site)
-    camera = MarkerCamera(model)
+    camera = None  # allocated inside try so camera errors also save partial results
     next_control=next_camera=next_print=0.
     last_control=data.time
     start=data.time
@@ -541,9 +545,14 @@ def main(seed=None, dock_standoff=None, view_trails=True):
         cruise_v_m_s=V_CRUISE, omega_max_rad_s=OMEGA_MAX,
         gains=[dict(v=float(speed), K=lqr_gain(speed)[0]) for speed in tracker.speeds],
         numpy_version=np.__version__, mujoco_version=mujoco.__version__,
-        note='Diagnostics only: controller and estimator settings unchanged.'),
+        demo_mode=None if session is None else session.mode,
+        dock_standoff_m=dock_standoff,
+        note='Terminal lifecycle added; 0.50 m default stand-off; EKF/LQR/planner unchanged.'),
         sources=[Path(__file__), Path(ekf_module.__file__), ROOT/'lidar_planner.py',
-                 ROOT/'lqr_diagnostics.py', *sorted((ROOT/'models/robotis_tb3').glob('*.xml'))])
+                 ROOT/'lqr_diagnostics.py', ROOT/'navigation_demo.py', ROOT/'navigation_view.py',
+                 ROOT/'collision_counter.py', *sorted((ROOT/'models/robotis_tb3').glob('*.xml'))])
+    if session is not None:
+        session.attach_run(run_dir, start)
     print('Output folder:', run_dir)
     print('ALL 3 GOALS + VISUAL DOCK: EKF feedback, LQR route, LiDAR stop')
     print(f'Encoder noise: {ENCODER_NOISE_ENABLED}; seed={ENCODER_NOISE_SEED}; '
@@ -558,8 +567,18 @@ def main(seed=None, dock_standoff=None, view_trails=True):
         gain,eigs=lqr_gain(speed)
         print(f'LQR v={speed:.3f}: K={gain}; closed-loop poles={eigs}')
     try:
-        with mujoco.viewer.launch_passive(model,data) as viewer:
+        with nullcontext() if session is None else session.viewer.lock():
+            camera = MarkerCamera(model)
+        viewer_context = (mujoco.viewer.launch_passive(model,data) if session is None
+                          else nullcontext(session.viewer))
+        with viewer_context as viewer:
             while viewer.is_running():
+                if session is not None:
+                    action = session.before_step()
+                    if action != "run":
+                        outcome = ("Reset requested; partial results saved" if action == "reset"
+                                   else "Closed by user; partial results saved")
+                        break
                 wall=time.perf_counter()
                 with viewer.lock():
                     hubs_before = data.xpos[wheel_bodies,:2].copy()
@@ -669,6 +688,8 @@ def main(seed=None, dock_standoff=None, view_trails=True):
                             print('         '+collisions.terminal_line())
                             for line in pose_lines(pose, truth, DOCK_POSE):
                                 print("         "+line)
+                            sigma = np.sqrt(np.maximum(np.diag(P), 0.))
+                            print(f"         EKF 1-sigma: x={100*sigma[0]:.2f} cm, y={100*sigma[1]:.2f} cm, theta={np.degrees(sigma[2]):.2f} deg")
                             print("         "+docking_progress(docking, pose, DOCK_POSE, t, tracker.mode=="DONE", docking_started))
                         if status=='DOCKED':
                             done_since=t if done_since is None else done_since
@@ -692,14 +713,22 @@ def main(seed=None, dock_standoff=None, view_trails=True):
                     time.sleep(delay)
     except KeyboardInterrupt:
         outcome='Interrupted by user; partial results saved'
+        if session is not None:
+            session.pending = 'quit'
+            session.event('keyboard_interrupt')
     except Exception as exc:
         failure = exc
         outcome=f'Error: {type(exc).__name__}: {exc}; partial results saved'
         (run_dir/'error.txt').write_text(traceback.format_exc(), encoding='utf-8')
     finally:
-        data.ctrl[motors]=0
+        if session is None:
+            data.ctrl[motors]=0
+        else:
+            with session.viewer.lock():
+                data.ctrl[motors]=0
         try:
-            camera.close()
+            if camera is not None:
+                camera.close()
         finally:
             collisions.close(outcome)
             diagnostics.event(data.time-start, 'run_end', outcome=outcome)
@@ -812,14 +841,28 @@ def main(seed=None, dock_standoff=None, view_trails=True):
         (run_dir/'summary.txt').write_text(outcome+'\nNo control samples recorded.\n', encoding='utf-8')
     if failure is not None:
         raise failure
+    return outcome
+
+def main(seed=None, dock_standoff=DEFAULT_DOCK_STANDOFF, view_trails=True, mode=2, auto=False):
+    import sys
+    from navigation_demo import apply_preset, run_demo
+    if seed is not None and int(seed) < 0:
+        raise ValueError('Seed must be non-negative.')
+    apply_preset(sys.modules[__name__], mode)
+    if auto:
+        return run_mission(seed, dock_standoff, view_trails)
+    return run_demo(sys.modules[__name__], seed, dock_standoff, view_trails, mode)
+
 
 if __name__=='__main__':
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--seed', type=int, default=None,
                         help='Override the noise seed for this run only')
-    parser.add_argument("--dock-standoff", type=float, default=None,
-                        help="Optional base-to-marker target distance, 0.45..0.647 m; default retains DOCK_POSE")
+    parser.add_argument("--dock-standoff", type=float, default=DEFAULT_DOCK_STANDOFF,
+                        help="Base-to-marker target distance, 0.45..0.647 m; default 0.50 m")
     parser.add_argument("--no-trails", action="store_true", help="Disable passive-viewer trail overlays")
+    parser.add_argument("--mode", type=int, choices=(1,2,3), default=2, help="Initial demo preset: 1 clean, 2 noise, 3 noise + slip")
+    parser.add_argument("--auto", action="store_true", help="Run once immediately without menu; close viewer at end")
     args = parser.parse_args()
-    main(seed=args.seed, dock_standoff=args.dock_standoff, view_trails=not args.no_trails)
+    main(seed=args.seed, dock_standoff=args.dock_standoff, view_trails=not args.no_trails, mode=args.mode, auto=args.auto)

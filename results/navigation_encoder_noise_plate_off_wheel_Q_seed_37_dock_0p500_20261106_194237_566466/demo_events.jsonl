@@ -1,0 +1,6 @@
+{"event": "start", "wall_utc": "2026-11-06T08:42:37.968754+00:00", "simulation_time_s": 0.0, "mode": 2, "seed": 37, "description": "Encoder noise; normal-grip plate"}
+{"event": "pause", "wall_utc": "2026-11-06T08:44:02.171403+00:00", "simulation_time_s": 34.511999999997435}
+{"event": "resume", "wall_utc": "2026-11-06T08:44:13.313229+00:00", "simulation_time_s": 34.511999999997435}
+{"event": "pause", "wall_utc": "2026-11-06T08:44:19.328146+00:00", "simulation_time_s": 38.09000000000181}
+{"event": "reset_requested", "wall_utc": "2026-11-06T08:44:24.428081+00:00", "simulation_time_s": 38.09000000000181}
+{"event": "finished", "wall_utc": "2026-11-06T08:44:24.520767+00:00", "simulation_time_s": 38.09000000000181, "outcome": "Reset requested; partial results saved"}
