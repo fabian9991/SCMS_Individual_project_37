@@ -1,0 +1,29 @@
+Interrupted by user; partial results saved
+Encoder noise enabled=True; seed=41; coefficient=0.005
+GOAL ERRORS AT DECLARED ARRIVAL (cm; truth for evaluation only)
+Goal                  Estimated distance  Actual distance  Localisation error
+GOAL 1                               2.90             2.26                0.80
+GOAL 2                               2.98            11.86               11.35
+GOAL 3                 NOT REACHED
+Charger approach       NOT REACHED
+Charger dock           NOT REACHED
+Bay arrivals declared: 2/3 using a 3 cm estimated-position threshold.
+Actual distance and localisation error at each declared arrival are reported above for accuracy evaluation.
+
+SAME-RUN ESTIMATOR COMPARISON
+Estimator         Position RMSE(cm)  Max(cm)  Final(cm)  Heading RMSE(deg)
+Fused EKF                      7.40    11.63      11.56              2.187
+Odometry only                  7.40    11.63      11.56              2.187
+No accepted camera updates: this run cannot demonstrate camera benefit.
+Odometry shadow uses the same noisy increments and never controls movement.
+Goal rows are sampled at first declared arrival; final docking metrics may differ after settling.
+This comparison tests estimation on one trajectory, not an odometry-only controlled mission.
+No collision detection metric is included.
+Camera SD settings: range=0.02 m, bearing=0.5 deg, heading=5 deg.
+
+Slip plate enabled=False; test sliding friction=1.0
+Time with actual tyre-plate contact: 0.00 s
+Accepted camera updates during tyre-plate contact: 0
+Observed tyre-plate sliding friction: []
+Left: tyre-plate contact steps=0, wheel travel=0.000 m, accumulated absolute rolling-distance mismatch=0.00 cm (insufficient wheel travel).
+Right: tyre-plate contact steps=0, wheel travel=0.000 m, accumulated absolute rolling-distance mismatch=0.00 cm (insufficient wheel travel).
