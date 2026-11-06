@@ -224,3 +224,5 @@ __pycache__/
 
 calibration/*.png
 camera_accuracy_results/**/*.png
+
+/Sensors Demo.mp4
