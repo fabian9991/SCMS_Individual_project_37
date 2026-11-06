@@ -1,78 +1,42 @@
-window.HELP_IMPROVE_VIDEOJS = false;
-
-var INTERP_BASE = "./static/interpolation/stacked";
-var NUM_INTERP_FRAMES = 240;
-
-var interp_images = [];
-function preloadInterpolationImages() {
-  for (var i = 0; i < NUM_INTERP_FRAMES; i++) {
-    var path = INTERP_BASE + '/' + String(i).padStart(6, '0') + '.jpg';
-    interp_images[i] = new Image();
-    interp_images[i].src = path;
-  }
-}
-
-function setInterpolationImage(i) {
-  var image = interp_images[i];
-  image.ondragstart = function() { return false; };
-  image.oncontextmenu = function() { return false; };
-  $('#interpolation-image-wrapper').empty().append(image);
-}
-
-
-$(document).ready(function() {
-    // Check for click events on the navbar burger icon
-    $(".navbar-burger").click(function() {
-      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-      $(".navbar-burger").toggleClass("is-active");
-      $(".navbar-menu").toggleClass("is-active");
-
+'use strict';
+// No analytics. All navigation and figures work without third-party scripts.
+const contents = document.querySelector('.contents');
+const toggle = document.querySelector('.contents-toggle');
+toggle?.addEventListener('click', () => {
+  const open = contents.classList.toggle('expanded');
+  toggle.setAttribute('aria-expanded', String(open));
+  toggle.querySelector('span').textContent = open ? '−' : '+';
+});
+const links = [...document.querySelectorAll('.contents nav a')];
+links.forEach(link => link.addEventListener('click', () => {
+  contents.classList.remove('expanded');
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.querySelector('span').textContent = '+';
+}));
+if ('IntersectionObserver' in window) {
+  const observer = new IntersectionObserver(entries => {
+    const visible = entries.filter(e => e.isIntersecting).sort((a,b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    if (!visible.length) return;
+    links.forEach(link => {
+      const active = link.hash === '#' + visible[0].target.id;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current','location'); else link.removeAttribute('aria-current');
     });
-
-    var options = {
-			slidesToScroll: 1,
-			slidesToShow: 3,
-			loop: true,
-			infinite: true,
-			autoplay: false,
-			autoplaySpeed: 3000,
-    }
-
-		// Initialize all div with carousel class
-    var carousels = bulmaCarousel.attach('.carousel', options);
-
-    // Loop on each carousel initialized
-    for(var i = 0; i < carousels.length; i++) {
-    	// Add listener to  event
-    	carousels[i].on('before:show', state => {
-    		console.log(state);
-    	});
-    }
-
-    // Access to bulmaCarousel instance of an element
-    var element = document.querySelector('#my-element');
-    if (element && element.bulmaCarousel) {
-    	// bulmaCarousel instance is available as element.bulmaCarousel
-    	element.bulmaCarousel.on('before-show', function(state) {
-    		console.log(state);
-    	});
-    }
-
-    /*var player = document.getElementById('interpolation-video');
-    player.addEventListener('loadedmetadata', function() {
-      $('#interpolation-slider').on('input', function(event) {
-        console.log(this.value, player.duration);
-        player.currentTime = player.duration / 100 * this.value;
-      })
-    }, false);*/
-    preloadInterpolationImages();
-
-    $('#interpolation-slider').on('input', function(event) {
-      setInterpolationImage(this.value);
-    });
-    setInterpolationImage(0);
-    $('#interpolation-slider').prop('max', NUM_INTERP_FRAMES - 1);
-
-    bulmaSlider.attach();
-
-})
+  }, {rootMargin: '-10% 0px -65% 0px', threshold: 0});
+  document.querySelectorAll('.report-section').forEach(section => observer.observe(section));
+}
+document.querySelector('.video-load')?.addEventListener('click', () => {
+  const frame = document.createElement('iframe');
+  frame.src = 'https://www.youtube-nocookie.com/embed/mWIeYK-iH-M?autoplay=1';
+  frame.title = 'TurtleBot3 final demonstration: three navigation conditions';
+  frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+  frame.allowFullscreen = true;
+  document.querySelector('#demo').replaceChildren(frame);
+});
+// Expand technical details when printing, then restore the reader's choices.
+let printOpened = [];
+window.addEventListener('beforeprint', () => {
+  printOpened = [...document.querySelectorAll('details:not([open])')];
+  printOpened.forEach(el => el.open = true);
+});
+window.addEventListener('afterprint', () => printOpened.forEach(el => el.open = false));
