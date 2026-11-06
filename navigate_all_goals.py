@@ -12,6 +12,8 @@ import numpy as np
 import traceback
 import test_ekf as ekf_module
 from lqr_diagnostics import ControllerLog, write_configuration
+from collision_counter import CollisionCounter
+# COLLISION_COUNTER_VERSION_1
 # LQR_DIAGNOSTICS_VERSION_1
 from lidar_planner import LidarPlanner
 from test_ekf import (MarkerCamera, predict_ekf, correct_ekf, motion,
@@ -494,6 +496,7 @@ def main(seed=None):
     next_control=next_camera=next_print=0.
     last_control=data.time
     start=data.time
+    collisions = CollisionCounter(model, base, run_dir, start_time=start)
     status='START'
     camera_status='waiting'
     accepted=detected=far=0
@@ -540,6 +543,7 @@ def main(seed=None):
                     forward /= max(np.linalg.norm(forward),1e-12)
                     mujoco.mj_step(model,data)
                     mujoco.mj_forward(model,data)
+                    collisions.sample(data)  # evaluation only, every physics step
                     enc=data.qpos[addresses].copy()
                     raw_increments=enc-previous
                     plate.score(raw_increments, data.xpos[wheel_bodies,:2]-hubs_before, forward, data, model.opt.timestep)
@@ -636,6 +640,7 @@ def main(seed=None):
                                   f'est=({pose[0]:+.3f},{pose[1]:+.3f}) '
                                   f'ey={ey:+.3f}m heading_err={np.degrees(eth):+.1f}deg '
                                   f'clearance={clearance:.2f}m camera={camera_status}')
+                            print('         '+collisions.terminal_line())
                         if status=='DOCKED':
                             done_since=t if done_since is None else done_since
                             if t-done_since>=2:
@@ -667,6 +672,7 @@ def main(seed=None):
         try:
             camera.close()
         finally:
+            collisions.close(outcome)
             diagnostics.event(data.time-start, 'run_end', outcome=outcome)
             diagnostics.close()
             (run_dir/'run_status.txt').write_text(outcome+'\n', encoding='utf-8')
@@ -757,10 +763,11 @@ def main(seed=None):
         summary += ['Odometry shadow uses the same noisy increments and never controls movement.',
                     'Goal rows are sampled at first declared arrival; final docking metrics may differ after settling.',
                     'This comparison tests estimation on one trajectory, not an odometry-only controlled mission.',
-                    'No collision detection metric is included.',
+                    'Obstacle contacts are monitored at each physics step; see collision_summary.txt.',
                     f'Camera SD settings: range={np.sqrt(ekf_module.R_CAMERA[0,0]):g} m, '
                     f'bearing={np.degrees(np.sqrt(ekf_module.R_CAMERA[1,1])):g} deg, '
                     f'heading={np.degrees(np.sqrt(ekf_module.R_CAMERA[2,2])):g} deg.',]
+        summary += ['', *collisions.summary_lines()]
         summary += ['', *plate.summary()]
         report='\n'.join(summary)+'\n'
         (run_dir/'summary.txt').write_text(report,encoding='utf-8')
