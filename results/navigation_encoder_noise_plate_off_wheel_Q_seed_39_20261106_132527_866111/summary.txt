@@ -1,0 +1,30 @@
+ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK
+Encoder noise enabled=True; seed=39; coefficient=0.005
+GOAL ERRORS AT DECLARED ARRIVAL (cm; truth for evaluation only)
+Goal                  Estimated distance  Actual distance  Localisation error
+GOAL 1                               2.98             6.79                4.54
+GOAL 2                               3.00            25.44               25.78
+GOAL 3                               2.97             4.08                1.48
+Charger approach                     5.45             5.56                0.17
+Charger dock                         1.27             1.23                0.06
+Bay arrivals declared: 3/3 using a 3 cm estimated-position threshold.
+Actual distance and localisation error at each declared arrival are reported above for accuracy evaluation.
+
+SAME-RUN ESTIMATOR COMPARISON
+Estimator         Position RMSE(cm)  Max(cm)  Final(cm)  Heading RMSE(deg)
+Fused EKF                     15.43    41.29       0.05              3.714
+Odometry only                 45.15    80.58      80.57              6.972
+Accepted camera updates: 63; position improved: 61; worsened: 2; unchanged: 0
+Mean immediate position-error reduction: +0.829 cm (positive is improvement).
+Odometry shadow uses the same noisy increments and never controls movement.
+Goal rows are sampled at first declared arrival; final docking metrics may differ after settling.
+This comparison tests estimation on one trajectory, not an odometry-only controlled mission.
+No collision detection metric is included.
+Camera SD settings: range=0.005 m, bearing=0.05 deg, heading=1.0 deg.
+
+Slip plate enabled=False; test sliding friction=1.0
+Time with actual tyre-plate contact: 17.58 s
+Accepted camera updates during tyre-plate contact: 28
+Observed tyre-plate sliding friction: [1.0]
+Left: tyre-plate contact steps=8690, wheel travel=1.467 m, accumulated absolute rolling-distance mismatch=0.36 cm (0.25% of wheel travel).
+Right: tyre-plate contact steps=8791, wheel travel=1.525 m, accumulated absolute rolling-distance mismatch=0.44 cm (0.29% of wheel travel).

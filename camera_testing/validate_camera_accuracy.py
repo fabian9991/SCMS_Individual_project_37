@@ -6,8 +6,14 @@ import csv
 import cv2
 import mujoco
 import numpy as np
+import sys
 
 ROOT = Path(__file__).resolve().parent
+if not (ROOT / "models").is_dir():
+    ROOT = ROOT.parent
+
+sys.path.insert(0, str(ROOT))
+from test_ekf import heading_from_normal, wrap_angle
 scene = ROOT / "models/robotis_tb3/scene_assignment.xml"
 
 model = mujoco.MjModel.from_xml_path(str(scene))
@@ -24,6 +30,7 @@ def required_id(kind, name):
 joint_id = required_id(mujoco.mjtObj.mjOBJ_JOINT, "base_joint")
 camera_id = required_id(mujoco.mjtObj.mjOBJ_CAMERA, "front_camera")
 marker_geom_id = required_id(mujoco.mjtObj.mjOBJ_GEOM, "charger_marker")
+base_id = required_id(mujoco.mjtObj.mjOBJ_BODY, "base")
 address = model.jnt_qposadr[joint_id]
 
 # Load the existing calibration.
@@ -125,6 +132,16 @@ def estimate_from_image(rgb):
     residual = image_points - projected.reshape(4, 2)
     reprojection_rms = np.sqrt(np.mean(np.sum(residual**2, axis=1)))
 
+    normal = rotation_matrix[:, 2]
+
+    if np.dot(normal, -tvec.flatten()) <= 0:
+        return {"status": "back_facing"}
+
+    if not np.isfinite(reprojection_rms) or reprojection_rms > 2.0:
+        return {"status": "high_reprojection_error"}
+
+    estimated_heading = heading_from_normal(normal)
+    
     return {
         "status": "ok",
         "estimated_range_m": horizontal_range,
@@ -132,6 +149,7 @@ def estimate_from_image(rgb):
         "estimated_facing_deg": facing,
         "marker_width_px": marker_width,
         "reprojection_rms_px": reprojection_rms,
+        "estimated_heading_rad": float(estimated_heading),
     }
 
 
@@ -159,10 +177,14 @@ def evaluation_truth():
         np.dot(marker_normal, toward_camera), -1, 1
     )))
 
+    base_rotation = data.xmat[base_id].reshape(3, 3)
+    true_heading = np.arctan2(base_rotation[1, 0], base_rotation[0, 0])
+
     return {
         "true_range_m": np.hypot(x_right, z_forward),
         "true_bearing_deg": np.degrees(np.arctan2(-x_right, z_forward)),
         "true_facing_deg": facing,
+        "true_heading_rad": float(true_heading),
     }
 
 
@@ -218,6 +240,9 @@ with mujoco.Renderer(model, height=height, width=width) as renderer:
             row["facing_error_deg"] = (
                 measurement["estimated_facing_deg"] - truth["true_facing_deg"]
             )
+            row["heading_error_rad"] = float(wrap_angle(
+                measurement["estimated_heading_rad"] - truth["true_heading_rad"]
+            ))
 
             print(
                 f"{number:03d}/{len(tests)} "
@@ -270,3 +295,52 @@ for x in sorted(set(row["robot_x_m"] for row in rows), reverse=True):
     )
 
 print(f"\nResults saved to: {csv_path}")
+
+# Use the same measured-range limit as the mission.
+usable = [
+    row for row in rows
+    if row["status"] == "ok"
+    and row["estimated_range_m"] <= 3.0
+]
+
+print(f"\nSamples within the mission range gate: {len(usable)}")
+
+if len(usable) >= 4:
+    errors = np.array([
+        [
+            row["range_error_m"],
+            np.deg2rad(row["bearing_error_deg"]),
+            row["heading_error_rad"],
+        ]
+        for row in usable
+    ])
+
+    bias = errors.mean(axis=0)
+    covariance = np.cov(errors, rowvar=False, ddof=1)
+    rmse = np.sqrt(np.mean(errors**2, axis=0))
+
+    print("Mean errors [m, deg, deg]:")
+    print([bias[0], *np.degrees(bias[1:])])
+
+    standard_deviations = np.sqrt(np.diag(covariance))
+    print("Error standard deviations [m, deg, deg]:")
+    print([
+        standard_deviations[0],
+        *np.degrees(standard_deviations[1:]),
+    ])
+
+    print("RMSE [m, deg, deg]:")
+    print([rmse[0], *np.degrees(rmse[1:])])
+
+    print("Measured error covariance [metres/radians]:")
+    print(covariance)
+
+    np.savez(
+        output / "camera_error_statistics.npz",
+        bias=bias,
+        covariance=covariance,
+        rmse=rmse,
+        sample_count=len(usable),
+    )
+else:
+    print("Too few usable samples to estimate the covariance.")
