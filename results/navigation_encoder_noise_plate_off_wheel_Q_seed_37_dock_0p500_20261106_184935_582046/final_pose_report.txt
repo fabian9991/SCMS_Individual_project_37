@@ -1,0 +1,17 @@
+FINAL POSE AND DOCKING REPORT
+Outcome: ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK
+All theta values below are degrees, wrapped to [-180, 180).
+ESTIMATED BASE: x=-8.1777 m, y=-0.0002 m, theta=+179.732 deg
+TRUE BASE (evaluation only): x=-8.1782 m, y=-0.0008 m, theta=+179.685 deg
+LOCALISATION (estimate - truth): dx=+0.05 cm, dy=+0.06 cm, dtheta=+0.048 deg, XY=0.08 cm
+DESIRED DOCK BASE: x=-8.1970 m, y=-0.0000 m, theta=-180.000 deg
+ESTIMATED DOCK ERROR (estimate - target): dx=+1.93 cm, dy=-0.02 cm, dtheta=-0.268 deg, XY=1.93 cm
+ACTUAL DOCK ERROR (truth - target): dx=+1.88 cm, dy=-0.08 cm, dtheta=-0.315 deg, XY=1.88 cm
+STATION GEOMETRY (evaluation only; world metres):
+  Charger centre XYZ=[-9.0, 0.0, 0.3]
+  Charger front XYZ=[-8.7, 0.0, 0.3]; marker front XYZ=[-8.697, 0.0, 0.3]
+  Face-aligned robot heading=-180.000 deg; actual heading error to station=-0.315 deg
+  Base-to-marker XY distance=0.5188 m
+  Base-to-charger front normal gap=0.5218 m (target 0.5030 m); lateral offset=-0.0008 m
+  Robot collision-surface to charger gap=0.4361 m
+  Centre/face distances are not body clearance. Surface gap uses simulated collision geometry.

@@ -1,0 +1,14 @@
+ALL GOALS REACHED + CAMERA-CONFIRMED STAND-OFF DOCK
+COLLISION MONITOR (evaluation only)
+NO OBSTACLE CONTACTS RECORDED
+Obstacle-contact episodes: 0
+Physics samples with obstacle contact: 0/94681
+Of these, touching/overlap samples (distance <= 0): 0
+Sampled obstacle-contact duration: 0.000000 s
+Monitored simulation interval: 189.362000 s
+Excluded support geoms: floor, floor_east, floor_south, floor_north, slip_plate
+Counts robot versus external geometry; self-contact and support contact are excluded.
+A contact is solver-active OR has distance <= 0. Active positive-margin contacts count conservatively.
+An episode is consecutive sampled contact with any obstacle, separated by at least one clear sample.
+Zero means no qualifying contact in this monitored interval and collision model; it is not a safety proof.
+Interrupted runs cover only their recorded interval. Initial settling before mission start is excluded.

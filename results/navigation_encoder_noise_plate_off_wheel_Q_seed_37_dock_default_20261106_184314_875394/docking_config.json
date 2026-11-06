@@ -1,0 +1,22 @@
+{
+  "dock_pose_m_m_rad": [
+    -8.05,
+    0.0,
+    3.141592653589793
+  ],
+  "marker_xy_m": [
+    -8.697,
+    0.0
+  ],
+  "requested_standoff_m": null,
+  "viewer_trails": true,
+  "target_base_to_marker_m": 0.6469999999999985,
+  "fused_xy_tol_m": 0.03,
+  "visual_xy_tol_m": 0.05,
+  "heading_tol_deg": 3.0,
+  "translation_stop_m": 0.02,
+  "confirmation_frames": 3,
+  "camera_max_age_s": 1.2,
+  "dock_timeout_s": 60,
+  "diagnostic_sha256": "6d4ae8b051146f3f7e5b12f9a9fef37e3816cda6a210d5b1d145db601f37faf7"
+}

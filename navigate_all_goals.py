@@ -429,7 +429,13 @@ def write_records(path, fields, records):
         writer.writerows(records)
 
 
-def main(seed=None):
+from navigation_view import (ViewerTrails, StationEvaluation, pose_lines,
+                             docking_progress, set_dock_standoff, save_final_report)
+# NAVIGATION_VIEW_VERSION_1
+
+def main(seed=None, dock_standoff=None, view_trails=True):
+    global DOCK_POSE
+    DOCK_POSE = set_dock_standoff(DOCK_POSE, MARKER_XY, dock_standoff)
     global ENCODER_NOISE_SEED
     if seed is not None:
         ENCODER_NOISE_SEED = int(seed)
@@ -462,6 +468,7 @@ def main(seed=None):
     run_label += '_plate_on' if SLIP_PLATE_ENABLED else '_plate_off'
     run_label += '_wheel_Q' if USE_WHEEL_TRAVEL_Q else '_time_Q'
     run_label += f'_seed_{ENCODER_NOISE_SEED}'
+    run_label += "_dock_default" if dock_standoff is None else ("_dock_"+format(dock_standoff, ".3f").replace(".", "p"))
     run_dir = ROOT / 'results' / ('navigation_' + run_label + '_' + datetime.now().strftime('%Y%m%d_%H%M%S_%f'))
     run_dir.mkdir(parents=True, exist_ok=False)
     pose, P = START_ESTIMATE.copy(), START_P.copy()
@@ -496,6 +503,23 @@ def main(seed=None):
     next_control=next_camera=next_print=0.
     last_control=data.time
     start=data.time
+    station_evaluation = StationEvaluation(model, base)
+    viewer_trails = ViewerTrails(enabled=view_trails)
+    print("VIEWER: green=true trail; blue=EKF trail; yellow=current accepted planner route; pink=desired dock base pose.")
+    print("Pose/geometry diagnostics use truth for evaluation only.")
+    print("Dock target base pose [m, m, rad]:", DOCK_POSE)
+    print("Dock success: 3 fresh accepted camera confirmations; fused XY <3 cm, visual XY <5 cm; both heading errors <3 deg.")
+    print("Dock translation stops within 2 cm of target; alignment/verification continues. Timeout: 60 s after docking starts.")
+    import json
+    import hashlib
+    (run_dir/"docking_config.json").write_text(json.dumps(dict(
+        dock_pose_m_m_rad=DOCK_POSE.tolist(), marker_xy_m=MARKER_XY.tolist(),
+        requested_standoff_m=dock_standoff, viewer_trails=view_trails,
+        target_base_to_marker_m=float(np.linalg.norm(DOCK_POSE[:2]-MARKER_XY)),
+        fused_xy_tol_m=.03, visual_xy_tol_m=.05, heading_tol_deg=3.,
+        translation_stop_m=.02, confirmation_frames=3, camera_max_age_s=CAMERA_MAX_AGE,
+        dock_timeout_s=60, diagnostic_sha256=hashlib.sha256(
+            (ROOT/"navigation_view.py").read_bytes()).hexdigest()), indent=2)+"\n", encoding="utf-8")
     collisions = CollisionCounter(model, base, run_dir, start_time=start)
     status='START'
     camera_status='waiting'
@@ -625,6 +649,8 @@ def main(seed=None):
                         data.ctrl[motors]=servo.command(desired_wheels,rates,elapsed,stop)
                         # Evaluation-only ground truth below, never passed to tracker/EKF.
                         truth=evaluation_pose(data,base)
+                        viewer_trails.sample(pose, truth)
+                        viewer_trails.draw(viewer, tracker, DOCK_POSE)  # under viewer.lock; display only
                         diagnostics.record(t, elapsed, tracker, servo, pose, truth,
                                            v, omega, desired_wheels, rates,
                                            data.ctrl[motors].copy(), stop, status, clearance)
@@ -641,6 +667,9 @@ def main(seed=None):
                                   f'ey={ey:+.3f}m heading_err={np.degrees(eth):+.1f}deg '
                                   f'clearance={clearance:.2f}m camera={camera_status}')
                             print('         '+collisions.terminal_line())
+                            for line in pose_lines(pose, truth, DOCK_POSE):
+                                print("         "+line)
+                            print("         "+docking_progress(docking, pose, DOCK_POSE, t, tracker.mode=="DONE", docking_started))
                         if status=='DOCKED':
                             done_since=t if done_since is None else done_since
                             if t-done_since>=2:
@@ -678,10 +707,12 @@ def main(seed=None):
             (run_dir/'run_status.txt').write_text(outcome+'\n', encoding='utf-8')
     print('\nNAVIGATION RESULT:',outcome)
     if rows:
+        truth = evaluation_pose(data, base)  # current final physics state for reporting
+        final_pose_lines = save_final_report(run_dir, outcome, pose, truth, DOCK_POSE, station_evaluation, data)
         print('Final estimated pose:',pose)
         print('Final actual pose (evaluation only):',truth)
-        print(f'Estimated goal distance: {np.linalg.norm(pose[:2]-DOCK_POSE[:2]):.4f} m')
-        print(f'Actual goal distance: {np.linalg.norm(truth[:2]-DOCK_POSE[:2]):.4f} m')
+        print(f'Estimated dock-target XY distance: {np.linalg.norm(pose[:2]-DOCK_POSE[:2]):.4f} m')
+        print(f'Actual dock-target XY distance: {np.linalg.norm(truth[:2]-DOCK_POSE[:2]):.4f} m')
         print(f'Final localisation error: {100*np.linalg.norm(pose[:2]-truth[:2]):.2f} cm')
         samples=np.asarray([row[1:7] for row in rows],dtype=float)
         position_errors=np.linalg.norm(samples[:,:2]-samples[:,3:5],axis=1)
@@ -769,6 +800,7 @@ def main(seed=None):
                     f'heading={np.degrees(np.sqrt(ekf_module.R_CAMERA[2,2])):g} deg.',]
         summary += ['', *collisions.summary_lines()]
         summary += ['', *plate.summary()]
+        summary += ["", *final_pose_lines]
         report='\n'.join(summary)+'\n'
         (run_dir/'summary.txt').write_text(report,encoding='utf-8')
         print('\n'+report)
@@ -786,5 +818,8 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--seed', type=int, default=None,
                         help='Override the noise seed for this run only')
+    parser.add_argument("--dock-standoff", type=float, default=None,
+                        help="Optional base-to-marker target distance, 0.45..0.647 m; default retains DOCK_POSE")
+    parser.add_argument("--no-trails", action="store_true", help="Disable passive-viewer trail overlays")
     args = parser.parse_args()
-    main(seed=args.seed)
+    main(seed=args.seed, dock_standoff=args.dock_standoff, view_trails=not args.no_trails)
